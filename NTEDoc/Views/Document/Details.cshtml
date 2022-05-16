@@ -395,12 +395,8 @@
                         <h6 class="file-name">@Model.DocumentFiles.Where(x => x.IsPrimaryFile == 1 && x.IsActive == 1).FirstOrDefault().FileTitle</h6>
                         <div class="file-actions">
                             <button class="btn-view"><i class="fas fa-eye"></i></button>
-
-                            @if (ViewBag.CanAddOrUpdateDocuments)
-                            {
-                                <button class="btn-edit"><i class="far fa-edit"></i></button>
-                                <button class="btn-delete"><i class="fas fa-trash"></i></button>
-                            }
+                            <button class="btn-edit"><i class="far fa-edit"></i></button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 }
@@ -419,11 +415,8 @@
                             <h6 class="file-name">@file.FileTitle</h6>
                             <div class="file-actions">
                                 <button class="btn-view"><i class="fas fa-eye"></i></button>
-                                @if (ViewBag.CanAddOrUpdateDocuments)
-                                {
-                                    <button class="btn-edit"><i class="far fa-edit"></i></button>
-                                    <button class="btn-delete"><i class="fas fa-trash"></i></button>
-                                }
+                                <button class="btn-edit"><i class="far fa-edit"></i></button>
+                                <button class="btn-delete"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     }
@@ -437,14 +430,9 @@
             </p>
         }
 
-
-
-        @if (ViewBag.CanAddOrUpdateDocuments && ViewBag.Status == DocumentStatus.InProcessing && ViewBag.MadeByRecorder)
-        {
-            <div class="all-files-actions">
-                <button class="bttn bttn-circle" id="add-new-file"><i class="fas fa-plus"></i></button>
-            </div>
-        }
+        <div class="all-files-actions">
+            <button class="bttn bttn-circle" id="add-new-file"><i class="fas fa-plus"></i></button>
+        </div>
 
     </div>
 </div>

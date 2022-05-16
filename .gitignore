@@ -1,2 +1,6 @@
 .vscode/
 .vs/
+NTEDoc.Services/obj
+NTEDoc.Services/bin
+NTEDoc.DataRepository/obj
+NTEDoc.DataRepository/bin
