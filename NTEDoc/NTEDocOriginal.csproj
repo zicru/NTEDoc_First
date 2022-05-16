@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-NTEDocOriginal-C9548DCB-05A2-41AF-A670-3F7C81CC2ADD</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.4"/>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2"/>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2"/>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.2"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.3"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.6.0"/>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.8.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3"/>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.23"/>
+    <PackageReference Include="jsreport.AspNetCore" Version="2.1.0"/>
+    <PackageReference Include="jsreport.Local" Version="2.1.0"/>
+    <PackageReference Include="jsreport.Binary" Version="2.2.0"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Account\"/>
+    <Folder Include="Views\DocumentType\"/>
+    <Folder Include="wwwroot\Documents\"/>
+    <Folder Include="wwwroot\lib\bsForDatatable\css\"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NTEDoc.DataRepository\NTEDoc.DataRepository.csproj"/>
+    <ProjectReference Include="..\NTEDoc.Services\NTEDoc.Services.csproj"/>
+  </ItemGroup>
+</Project>

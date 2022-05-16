@@ -1,0 +1,541 @@
+﻿@model NTEDoc.DataRepository.Document
+@using  NTEDoc.DataRepository.Models
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/New/_Layout.cshtml";
+}
+
+@section Styles {
+    <link href="~/css/details.css" rel="stylesheet" />
+}
+
+
+@section Links {
+    <div class="nav-link">
+        <a class="link-head" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-alt" aria-hidden="true"></i>
+            <span class="nav-link-text">
+                Dokumenti
+            </span>
+        </a>
+        <div class="link-body" style="display: none !important">
+            <button class="bttn bttn-regular bttn-regular-success create-document">Kreiraj dokument <i class="fa fa-plus-circle"></i> </button>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="show-all" class="checkbox-title">Prikazi sve dokumente</label>
+                <input type="checkbox" id="show-all">
+                <label for="show-all"></label>
+            </div>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="awaitingUser" class="checkbox-title">Za obradu</label>
+                <input type="checkbox" id="awaitingUser">
+                <label for="awaitingUser"></label>
+            </div>
+
+            <div class="document-count">
+                <div class="custom-select-wrapper" id="per-page-select">
+                    <div class="select-replacement">
+                        <p class="selected-option" style="color: #15AF1B">
+                            10
+                        </p>
+
+                        <div class="options">
+                            <div class="option-replacement selected" data-value="10">10</div>
+                            <div class="option-replacement" data-value="20">20</div>
+                            <div class="option-replacement" data-value="50">50</div>
+                            <div class="option-replacement" data-value="100">100</div>
+                            <div class="option-replacement" data-value="300">300</div>
+                        </div>
+                    </div>
+
+                    <select name="approved-state" id="approved-state">
+                        <option value="10" selected>10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50" selected>50</option>
+                        <option value="100" selected>100</option>
+                        <option value="300" selected>300</option>
+                    </select>
+                </div>
+                <span>dokumenata po strani</span>
+            </div>
+
+            <div class="documents-search">
+                <input type="text" placeholder="Pretraga...">
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter opened">
+                    <div class="filter-title">Partner</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Likvidator</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Sektor</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Datum prijema</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("99"))
+    {
+        <div class="nav-link">
+            <a class="link-head" asp-controller="Admin" asp-action="Index">
+                <i class="nav-link-icon fas fa-user-shield"></i>
+                <span class="nav-link-text">
+                    Admin panel
+                </span>
+            </a>
+        </div>
+    }
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Partner" asp-action="Index">
+            <i class="nav-link-icon fas fa-handshake"></i>
+            <span class="nav-link-text">
+                Partneri
+            </span>
+        </a>
+    </div>
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Contract" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-contract"></i>
+            <span class="nav-link-text">
+                Ugovori
+            </span>
+        </a>
+    </div>
+}
+
+
+
+
+
+<h2 class="main-page-heading">Detalji</h2>
+
+<div class="document-details">
+    <h4 class="document-title">@Html.DisplayFor(model => model.Name)</h4>
+
+    @if (String.IsNullOrEmpty(Model.Comment))
+    {
+        <button id="addCommentToggle">
+            Dodaj komentar
+            <i class="fa fa-edit"></i>
+        </button>
+    }
+    else
+    {
+        <button id="readComment">
+            Pročitaj komentar
+        </button>
+    }
+
+    <div class="document-details-content">
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.ReceivedDate)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.ReceivedDate)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.CurrencyDate)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.CurrencyDate)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.Partner)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.Partner.naziv)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.DocumentNumber)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.DocumentNumber)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.ReferenceNumber)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.ReferenceNumber)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.CompanyContract)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.CompanyContract.ArchiveNumber)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.DocumentType)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.DocumentType.Naziv)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.DeliveryType)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.DeliveryType.Name)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.Amount)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.Amount)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.Likvidator)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.Likvidator.FullName)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.Sector)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.Sector.Naziv)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.CreatedBy)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.CreatedBy.FullName)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.CreatedDate)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.CreatedDate)</p>
+        </div>
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.Status)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.Status.Name)</p>
+        </div>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="document-actions">
+
+                @if (
+       DocumentStatus.RecorderStatuses.Any(s => s == ViewBag.Status) &&
+       ViewBag.UserRole == UserRoles.Recorder &&
+       ViewBag.MadeByRecorder)
+                {
+
+                    <div class="actions-group">
+
+                        @if (ViewBag.CanSendToController)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-success" id="sendToController"><i class="fas fa-step-forward"></i></button>
+                        }
+
+                    </div>
+
+                    <div class="actions-group">
+
+                        @if (ViewBag.CanAddOrUpdateDocuments)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-warning" id="btn-edit"><i class="far fa-edit"></i></button>
+                        }
+
+                        @if (ViewBag.CanReturnToSupplier)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
+                        }
+
+                    </div>
+
+                }
+                else if (
+                 DocumentStatus.JNControllerStatuses.Any(s => s == ViewBag.Status) &&
+                 ViewBag.UserRole == UserRoles.JNController &&
+                 ViewBag.BelongsToController)
+                {
+
+                    <div class="actions-group">
+
+                        @if (ViewBag.CanSendToExecutor)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-success" id="sendToExecutor"><i class="fas fa-step-forward"></i></button>
+                        }
+
+                        @if (ViewBag.CanEditDocuments)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-warning" id="controllerEdit"><i class="fas fa-edit"></i></button>
+                        }
+
+                    </div>
+
+
+                    <div class="actions-group">
+
+                        @if (ViewBag.CanReturnToRecorder)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-warning" id="returnToRecorder"><i class="fas fa-undo"></i></button>
+                        }
+
+                        @if (ViewBag.CanReturnToSupplier)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
+                        }
+
+                    </div>
+
+                }
+                else if (
+                    DocumentStatus.ExecutorStatuses.Any(s => s == ViewBag.Status) &&
+                    ViewBag.UserRole == UserRoles.Executor &&
+                    ViewBag.AssignedToExecutor)
+                {
+
+                    <div class="actions-group">
+                        @if (ViewBag.Status == DocumentStatus.JNControllerSentToExecutor)
+                        {
+                            if (ViewBag.CanConfirmReceiving)
+                            {
+                                <button class="bttn bttn-circle bttn-circle-success" id="confirm-received"><i class="fas fa-check"></i></button>
+                            }
+                        }
+                        else if (ViewBag.Status == DocumentStatus.ExecutorReceivedFromJNController)
+                        {
+                            if (ViewBag.CanSendToSectorInCharge)
+                            {
+                                <button class="bttn bttn-circle bttn-circle-success" id="forward-to-sector"><i class="fas fa-check"></i></button>
+                            }
+
+                            if (ViewBag.CanReturnToRecorder)
+                            {
+                                <button class="bttn bttn-circle bttn-circle-warning long-return-btn" id="returnToRecorder"><i class="fas fa-undo"></i> Vrati evidentičaru</button>
+                            }
+
+                            if (ViewBag.CanReturnToController && (Model.ControllerId != null && Model.ControllerId != 0))
+                            {
+                                <button class="bttn bttn-circle bttn-circle-warning long-return-btn" id="returnToControllor"><i class="fas fa-undo"></i> Vrati kontroloru</button>
+                            }
+
+                        }
+                        else if (ViewBag.Status == DocumentStatus.SectorSignedAndApproved)
+                        {
+                            if (ViewBag.CanApproveDocuments)
+                            {
+                                <button class="bttn bttn-circle bttn-circle-success" id="approveDocument"><i class="fas fa-check"></i></button>
+                            }
+                        }
+                    </div>
+
+
+                    <div class="actions-group">
+                        @if (ViewBag.CanReturnToSupplier && ViewBag.Status != DocumentStatus.JNControllerSentToExecutor)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
+                        }
+                    </div>
+
+                }
+                else if (
+                 DocumentStatus.SectorStatuses.Any(s => s == ViewBag.Status) &&
+                 ViewBag.UserRole == UserRoles.SectorRecorder)
+                {
+
+                    <div class="actions-group">
+
+                        @if (ViewBag.CanSignAndVerifyDocuments)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-success" id="signAndApprove"><i class="fas fa-step-forward"></i></button>
+                        }
+
+                    </div>
+
+                    <div class="actions-group">
+
+                        @if (ViewBag.CanReturnToSupplier)
+                        {
+                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
+                        }
+
+                    </div>
+
+                }
+
+                @if (ViewBag.UserRole == UserRoles.HigherExecutor && ViewBag.Status == DocumentStatus.JNControllerSentToExecutor)
+                {
+                    @if (ViewBag.CanEditDocuments)
+                    {
+                        <button class="bttn bttn-circle bttn-circle-warning" id="controllerEdit"><i class="fas fa-edit"></i></button>
+                    }
+                }
+                else if (ViewBag.UserRole == UserRoles.HigherJNController && ViewBag.Status == DocumentStatus.RecorderSentToJNController)
+                {
+                    @if (ViewBag.CanEditDocuments)
+                    {
+                        <button class="bttn bttn-circle bttn-circle-warning" id="controllerEdit"><i class="fas fa-edit"></i></button>
+                    }
+                }
+            </div>
+        }
+
+    </div>
+
+
+    <div class="document-files">
+        <h4 class="document-files-title">Fajlovi</h4>
+
+
+
+        @if (Model.DocumentFiles.Count >= 1)
+        {
+
+            <div class="primary-file">
+
+                <h5>Primarni fajl</h5>
+
+                @if (Model.DocumentFiles.Where(x => x.IsPrimaryFile == 1 && x.IsActive == 1).Count() != 0)
+                {
+                    <div class="file" data-filename="@Model.DocumentFiles.Where(x => x.IsPrimaryFile == 1 && x.IsActive == 1).FirstOrDefault().FileName" data-id="@Model.DocumentFiles.Where(x => x.IsPrimaryFile == 1 && x.IsActive == 1).FirstOrDefault().DocumentFileId">
+                        <h6 class="file-name">@Model.DocumentFiles.Where(x => x.IsPrimaryFile == 1 && x.IsActive == 1).FirstOrDefault().FileTitle</h6>
+                        <div class="file-actions">
+                            <button class="btn-view"><i class="fas fa-eye"></i></button>
+
+                            @if (ViewBag.CanAddOrUpdateDocuments)
+                            {
+                                <button class="btn-edit"><i class="far fa-edit"></i></button>
+                                <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                            }
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+
+            @if (Model.DocumentFiles.Where(f => f.IsActive == 1 && f.IsPrimaryFile == 0).Count() >= 1)
+            {
+                <div class="other-files">
+                    <h5>Ostali fajlovi</h5>
+
+                    @foreach (var file in Model.DocumentFiles.Where(f => f.IsActive == 1 && f.IsPrimaryFile == 0))
+                    {
+                        <div class="file" data-filename="@file.FileName" data-id="@file.DocumentFileId">
+                            <h6 class="file-name">@file.FileTitle</h6>
+                            <div class="file-actions">
+                                <button class="btn-view"><i class="fas fa-eye"></i></button>
+                                @if (ViewBag.CanAddOrUpdateDocuments)
+                                {
+                                    <button class="btn-edit"><i class="far fa-edit"></i></button>
+                                    <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p>
+                Nema fajlova za ovaj dokument
+            </p>
+        }
+
+
+
+        @if (ViewBag.CanAddOrUpdateDocuments && ViewBag.Status == DocumentStatus.InProcessing && ViewBag.MadeByRecorder)
+        {
+            <div class="all-files-actions">
+                <button class="bttn bttn-circle" id="add-new-file"><i class="fas fa-plus"></i></button>
+            </div>
+        }
+
+    </div>
+</div>
+
+<div class="document-changes-log">
+    <h2 class="section-heading">Istorija promena</h2>
+
+    <div class="change-log">
+        <table>
+            <thead>
+                <tr>
+                    <th>Izmenio</th>
+                    <th>Datum izmene</th>
+                    <th>Status</th>
+                    <th>Komentar</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var log in ViewBag.StatusChanges)
+                {
+                    <tr>
+                        <td>@log.CreatedBy.FullName</td>
+                        <td>@log.CreatedDate</td>
+                        <td>@log.Status.Name</td>
+                        <td>@log.Comment</td>
+                    </tr>
+
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<partial name="PartialViews/_ForwardPartial" model="@Model" />
+<partial name="PartialViews/_ReturnedToContractor" model="@Model" />
+<partial name="PartialViews/_SendToControllerModal" model="@Model" />
+<partial name="PartialViews/_ReturnToControllerModal" model="@Model" />
+<partial name="PartialViews/_ConfirmPartial" model="@Model" />
+<partial name="PartialViews/_EditPartial" model="@Model" />
+<partial name="PartialViews/_ForwardToSectorPartial" model="@Model" />
+<partial name="PartialViews/_ReturnedPartial" model="@Model" />
+<partial name="PartialViews/_SectorProcessingModal" model="@Model" />
+<partial name="PartialViews/_ReferentProcessingModal" model="@Model" />
+<partial name="PartialViews/_ApprovePartial" model="@Model" />
+<partial name="PartialViews/_AddFileModal" model="@Model" />
+<partial name="PartialViews/_ViewFileModal" model="@Model" />
+<partial name="PartialViews/_EditFileModal" model="@Model" />
+<partial name="PartialViews/_RemoveDocumentFile" model="@Model" />
+<partial name="PartialViews/_AddCommentModal" model="@Model" />
+<partial name="PartialViews/_ReadCommentModal" model="@Model" />
+
+@section Scripts{
+
+    <link href="~/plugins/select2/css/select2.css" rel="stylesheet" />
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            $('.select2').select2()
+        })
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+
+            let sectorApprovalToggle = $(`input[name="document-valid"]`),
+                modalInput = $(`input[name="sectorApproval"]`),
+                fileToggle = $(`.file-toggle`),
+                newFileForm = $(`form#new-file`);
+
+            fileToggle.on('click', function () {
+                console.log(this);
+            });
+
+            newFileForm.on('submit', function (e) {
+
+            });
+
+            sectorApprovalToggle.on('click', function () {
+                let value = this.value === 'true' ?
+                    1 :
+                    0;
+
+                modalInput.val(value);
+            });
+
+        });
+    </script>
+}

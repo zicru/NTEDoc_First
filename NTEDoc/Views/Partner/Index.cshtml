@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "Admin Panel";
+    Layout = "~/Views/Shared/New/_Layout.cshtml";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/partners.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+}
+
+@section Links {
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Document" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-alt" aria-hidden="true"></i>
+            <span class="nav-link-text">
+                Dokumenti
+            </span>
+        </a>
+        <div class="link-body" style="display: none !important">
+            <button class="bttn bttn-regular bttn-regular-success create-document">Kreiraj dokument <i class="fa fa-plus-circle"></i> </button>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="show-all" class="checkbox-title">Prikazi sve dokumente</label>
+                <input type="checkbox" id="show-all">
+                <label for="show-all"></label>
+            </div>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="awaitingUser" class="checkbox-title">Za obradu</label>
+                <input type="checkbox" id="awaitingUser">
+                <label for="awaitingUser"></label>
+            </div>
+
+            <div class="document-count">
+                <div class="custom-select-wrapper" id="per-page-select">
+                    <div class="select-replacement">
+                        <p class="selected-option" style="color: #15AF1B">
+                            10
+                        </p>
+
+                        <div class="options">
+                            <div class="option-replacement selected" data-value="10">10</div>
+                            <div class="option-replacement" data-value="20">20</div>
+                            <div class="option-replacement" data-value="50">50</div>
+                            <div class="option-replacement" data-value="100">100</div>
+                        </div>
+                    </div>
+
+                    <select name="approved-state" id="approved-state">
+                        <option value="10" selected>10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50" selected>50</option>
+                        <option value="100" selected>100</option>
+                    </select>
+                </div>
+                <span>dokumenata po strani</span>
+            </div>
+
+            <div class="documents-search">
+                <input type="text" placeholder="Pretraga...">
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter opened">
+                    <div class="filter-title">Partner</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Likvidator</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Sektor</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Datum prijema</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("99")) {
+        <div class="nav-link">
+            <a class="link-head" asp-controller="Admin" asp-action="Index">
+                <i class="nav-link-icon fas fa-user-shield"></i>
+                <span class="nav-link-text">
+                    Admin panel
+                </span>
+            </a>
+        </div>
+    }
+    <div class="nav-link active">
+        <a class="link-head" asp-controller="Partner" asp-action="Index">
+            <i class="nav-link-icon fas fa-handshake"></i>
+            <span class="nav-link-text">
+                Partneri
+            </span>
+        </a>
+        <div class="link-body">
+            <div class="document-count">
+                <div class="custom-select-wrapper" id="per-page-select">
+                    <div class="select-replacement">
+                        <i class="fas fa-angle-down"></i>
+
+                        <p class="selected-option" style="color: #15AF1B">
+                            10
+                        </p>
+
+                        <div class="options">
+                            <div class="option-replacement selected" data-value="10">10</div>
+                            <div class="option-replacement" data-value="20">20</div>
+                            <div class="option-replacement" data-value="50">50</div>
+                            <div class="option-replacement" data-value="100">100</div>
+                            <div class="option-replacement" data-value="300">300</div>
+                        </div>
+                    </div>
+
+                    <select name="approved-state" id="approved-state">
+                        <option value="10" selected>10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50" selected>50</option>
+                        <option value="100" selected>100</option>
+                        <option value="300" selected>300</option>
+                    </select>
+                </div>
+                <span>dokumenata po strani</span>
+            </div>
+
+            <div class="documents-search">
+                <i class="fa fa-search"></i>
+                <input id="partnerSearch" type="text" placeholder="Pretraga...">
+            </div>
+        </div>
+    </div>
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Contract" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-contract"></i>
+            <span class="nav-link-text">
+                Ugovori
+            </span>
+        </a>
+    </div>
+}
+
+<h2 class="main-page-heading">Partneri</h2>
+
+
+<div class="admin-panel-section">
+    <div class="table-wrapper">
+        <div class="card">
+            <div class="card-body table-card">
+                <table id="partners-table" width="100%" class="table table-striped table-bordered table-hover" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>IDFirme</th>
+                            <th>Konto</th>
+                            <th>Naziv partnera</th>
+                            <th>Mesto</th>
+                            <th>Adresa</th>
+                            <th>PIB</th>
+                            <th>Matični broj</th>
+                            <th>Žiro račun</th>
+                            <th>Br. Telefona</th>
+                            <th>PTT</th>
+                            <th>Opština</th>
+                            <th>Dokumenti</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+
+    <script src="~/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Buttons-->
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    @*<script src="~/plugins/datatables-buttons/js/buttons.flash.min.js"></script>*@
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+
+    <script src="~/js/partner-index.js"></script>
+}
+
+

@@ -1,0 +1,1100 @@
+﻿@model IEnumerable<NTEDoc.DataRepository.Document>
+@using Newtonsoft.Json;
+@using NTEDoc.Helpers.Auth;
+@using NTEDoc.DataRepository.Models;
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/New/_Layout.cshtml";
+    ViewBag.SearchQuery = Context.Request.Query["searchParameter"];
+}
+
+@section Styles{
+    <link href="~/css/documents.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+}
+
+
+
+@section Links {
+    <div class="nav-link active">
+        <div class="link-head">
+            <i class="nav-link-icon fas fa-file-alt" aria-hidden="true"></i>
+            <span class="nav-link-text">
+                Dokumenti
+            </span>
+        </div>
+        <div class="link-body">
+            @if (ViewBag.CanCreateDocuments)
+            {
+                <button class="bttn bttn-regular bttn-regular-success create-document" id="create-document-toggle">Kreiraj dokument <i class="fa fa-plus-circle"></i> </button>
+            }
+
+            @if (ViewBag.UserRole != UserRoles.SectorRecorder && ViewBag.UserRole != UserRoles.HigherExecutor)
+            {
+                <div class="custom-checkbox-wrapper">
+                    <label for="toggle-all-documents" class="checkbox-title">Prikaži sve dokumente</label>
+                    <input type="checkbox" id="toggle-all-documents">
+                    <label for="toggle-all-documents">
+                        <i class="fa fa-check"></i>
+                    </label>
+                </div>
+            }
+
+            <div class="custom-checkbox-wrapper">
+                <label for="awaitingUser" class="checkbox-title">Za obradu</label>
+                <input type="checkbox" id="awaitingUser">
+                <label for="awaitingUser">
+                    <i class="fa fa-check"></i>
+                </label>
+            </div>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="longerThan48" class="checkbox-title">Na ćekanju duže od 48h</label>
+                <input type="checkbox" id="longerThan48">
+                <label for="longerThan48">
+                    <i class="fa fa-check"></i>
+                </label>
+            </div>
+
+            <div class="toggle-wrapper">
+                <div class="single-option">
+                    <label for="option1" class="text-label">Svi</label>
+                    <input type="radio" name="contractType" id="option1" value="0">
+                    <label for="option1" class="display-label"></label>
+                </div>
+
+                <div class="single-option">
+                    <label for="option2" class="text-label">Samo sa ugovorom</label>
+                    <input type="radio" name="contractType" id="option2" value="1">
+                    <label for="option2" class="display-label"></label>
+                </div>
+
+                <div class="single-option">
+                    <label for="option3" class="text-label">Samo bez ugovora</label>
+                    <input type="radio" name="contractType" id="option3" value="2">
+                    <label for="option3" class="display-label"></label>
+                </div>
+            </div>
+
+            <div class="document-count">
+                <div class="custom-select-wrapper" id="per-page-select">
+                    <div class="select-replacement">
+                        <i class="fas fa-angle-down"></i>
+
+                        <p class="selected-option" style="color: #15AF1B">
+                            10
+                        </p>
+
+                        <div class="options">
+                            <div class="option-replacement selected" data-value="10">10</div>
+                            <div class="option-replacement" data-value="20">20</div>
+                            <div class="option-replacement" data-value="50">50</div>
+                            <div class="option-replacement" data-value="100">100</div>
+                            <div class="option-replacement" data-value="300">300</div>
+                        </div>
+                    </div>
+
+                    <select name="approved-state" id="approved-state">
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="300">300</option>
+                    </select>
+                </div>
+                <span>dokumenata po strani</span>
+            </div>
+
+            <div class="documents-search">
+                <i class="fa fa-search"></i>
+                <input id="docSearch" type="text" placeholder="Pretraga..." value="@(ViewBag.SearchQuery)">
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter opened">
+                    <div class="filter-title">Partner</div>
+                    <div class="filter-body">
+                        <input type="text" id="partnersSearch" placeholder="Počnite da kucate...">
+
+                        <div class="filters-select-list" id="partnersSelect">
+                            @foreach (var item in ViewBag.Partners)
+                            {
+                                <div class="partner-select" data-partner="@item.naziv">
+                                    <div class="custom-checkbox-wrapper">
+                                        <label for="partner-@item.IDFirme" class="checkbox-title">@item.naziv</label>
+                                        <input type="checkbox" value="@item.IDFirme" id="partner-@item.IDFirme">
+                                        <label for="partner-@item.IDFirme">
+                                            <i class="fa fa-check"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-filter">
+                    <div class="filter-title">Likvidator</div>
+                    <div class="filter-body">
+                        <div class="filters-select-list" id="executorSelect">
+                            @foreach (var item in ViewBag.Executors)
+                            {
+                                <div class="executor-select" data-executor="@item.FullName">
+                                    <div class="custom-checkbox-wrapper">
+                                        <label for="executor-@item.UserId" class="checkbox-title">@item.FullName</label>
+                                        <input type="checkbox" value="@item.UserId" id="executor-@item.UserId">
+                                        <label for="executor-@item.UserId">
+                                            <i class="fa fa-check"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-filter">
+                    <div class="filter-title">Sektor</div>
+                    <div class="filter-body">
+                        <div class="filters-select-list" id="sectorSelect">
+                            @foreach (var item in ViewBag.Sectors)
+                            {
+                                <div class="sektor-select" data-sektor="@item.Naziv">
+                                    <div class="custom-checkbox-wrapper">
+                                        <label for="sektor-@item.Id" class="checkbox-title">@item.Naziv</label>
+                                        <input type="checkbox" value="@item.Id" id="sektor-@item.Id">
+                                        <label for="sektor-@item.Id">
+                                            <i class="fa fa-check"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-filter">
+                    <div class="filter-title">Datum prijema</div>
+                    <div class="filter-body">
+                        <div class="date-input-group">
+                            Od:
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div class="date-input-group">
+                            Do:
+                            <input type="date" id="dateTo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="bttn bttn-regular bttn-regular-dark" id="advanced-filters-open">
+                Napredni filteri
+                <i class="fa fa-filter"></i>
+            </button>
+
+        </div>
+    </div>
+    @if (User.IsInRole("99")) {
+        <div class="nav-link">
+            <a class="link-head" asp-controller="Admin" asp-action="Index">
+                <i class="nav-link-icon fas fa-user-shield"></i>
+                <span class="nav-link-text">
+                    Admin panel
+                </span>
+            </a>
+        </div>
+    }
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Partner" asp-action="Index">
+            <i class="nav-link-icon fas fa-handshake"></i>
+            <span class="nav-link-text">
+                Partneri
+            </span>
+        </a>
+    </div>
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Contract" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-contract"></i>
+            <span class="nav-link-text">
+                Ugovori
+            </span>
+        </a>
+    </div>
+}
+
+<h2 class="main-page-heading">
+    Dokumenti
+</h2>
+
+<div class="export-buttons">
+    @*<div class="previous-checkbox-group">
+        <label for="previouslyPrinted">Štampaj sve</label>
+        <input type="checkbox" name="previouslyPrinted" id="previouslyPrinted" />
+        <label for="previouslyPrinted" class="fake-input">
+            <i class="fa fa-check"></i>
+        </label>
+    </div>*@
+    <span>Izvezi kao</span>
+    <button id="export-excel"><i class="fas fa-file-excel"></i></button>
+    <button id="export-pdf"><i class="fas fa-file-pdf"></i></button>
+</div>
+
+<section class="content">
+    <!--<div class="row">
+        <div class="form-group col-md-2 ">
+            <label class="control-label">Izaberite godinu&nbsp; </label>
+            <select type="text" class="form-control " id="searchYear" asp-items="ViewBag.Years" name="yearString" autocomplete="off">-->
+    @*<option selected="selected" value="">Izaberite godinu</option>*@
+    @* </select>
+        </div>
+
+        <div class="form-group col-md-2 ">
+            <label class="control-label">Izaberite status&nbsp; </label>
+            <select type="text" class="form-control " id="searchStatus" asp-items="ViewBag.Statusi" name="statusString" autocomplete="off">
+            </select>
+        </div>
+
+        <div class="form-group col-md-2 ">
+            <label class="control-label">Datum od&nbsp; </label>
+            <input type="date" class="form-control" name="DateFrom" id="DateFrom" placeholder="Search by date..." autocomplete="off">
+        </div>
+        <div class="form-group col-md-2 ">
+            <label class="control-label">Datum do&nbsp; </label>
+            <input type="date" class="form-control" name="DateTo" id="DateTo" placeholder="Search by date..." autocomplete="off">
+        </div>
+    </div> *@
+
+    <div class="applied-filters">
+
+    </div>
+
+    <div id="advanced-filters">
+        <partial name="PartialViews/_AdvancedFiltersModal" model="@ViewBag.Document" />
+    </div>
+
+    <div class="card">
+        <!-- /.card-header -->
+        <div class="card-body table-card">
+            <table id="example" class="table table-striped table-bordered table-hover" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Naziv</th>
+                        <th>Tip</th>
+                        <th>Broj fakture</th>
+                        <th>Sektor</th>
+                        <th>Partner</th>
+                        <th>Status</th>
+                        <th>Broj ugovora</th>
+                        <th>Datum prijema</th>
+                        <th>Datum dokumenta</th>
+                        <th>Datum poslednje izmene</th>
+                        <th>Pregled</th>
+                        <th>Detalji</th>
+                        <th>Redni broj</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+
+
+
+
+
+</section>
+
+<partial name="PartialViews/_ModalPartial" />
+
+<partial name="PartialViews/_CreatePartial" model="@ViewBag.Document" />
+
+<partial name="PartialViews/_ExportPartial" model="@ViewBag.Document" />
+
+@section Scripts{
+    <!--CSS-->
+    <link href="~/plugins/select2/css/select2.css" rel="stylesheet" />
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+
+    <script src="~/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Buttons-->
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    @*<script src="~/plugins/datatables-buttons/js/buttons.flash.min.js"></script>*@
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    @*<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>*@
+    <script src="~/plugins/jszip/jszip.min.js"></script>
+    <script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            let partnersArrayFilter = JSON.parse(window.localStorage.getItem("partnerFilters"));
+            let executorsArrayFilter = JSON.parse(window.localStorage.getItem("executorFilters"));
+            let sektorArrayFilter = JSON.parse(window.localStorage.getItem("sektorFilters"));
+            let contractType = JSON.parse(window.localStorage.getItem("contractType"));
+            let advancedFilters = {};
+            let oldAdvancedFilters = window.localStorage.getItem("advancedFilters");
+            let exportIndexes = [13, 2, 3, 4, 5, 6, 7, 9];
+
+
+            if (!oldAdvancedFilters) {
+                advancedFilters = {
+                    recorders: [],
+                    createdAtDate: {
+                        from: '',
+                        to: ''
+                    },
+                    documentDate: {
+                        from: '',
+                        to: ''
+                    },
+                    status: -1,
+                    documentType: -1,
+                    amount: {
+                        from: 0,
+                        to: 0
+                    },
+                    deliveryType: -1
+                };
+            } else {
+                advancedFilters = JSON.parse(oldAdvancedFilters);
+            }
+
+            // WE DO NOT TALK ABOUT THIS PART OF THE CODE
+            if (partnersArrayFilter == null) {
+                partnersArrayFilter = [];
+            } else {
+                partnersArrayFilter.forEach(partner => {
+
+                    let partnerInput = $(`.partner-select input#partner-${partner}[type='checkbox']`);
+
+                    partnerInput[0].checked = true;
+                    addAppliedFilter(partnerInput[0].id, partner, partnerInput.siblings('.checkbox-title').html(), 'partner');
+                });
+            }
+
+            if (executorsArrayFilter == null) {
+                executorsArrayFilter = [];
+            } else {
+                executorsArrayFilter.forEach(executor => {
+
+                    let executorInput = $(`.executor-select input#executor-${executor}[type='checkbox']`);
+
+                    executorInput[0].checked = true;
+                    addAppliedFilter(executorInput[0].id, executor, executorInput.siblings('.checkbox-title').html(), 'executor');
+                });
+            }
+
+
+            if (sektorArrayFilter == null) {
+                sektorArrayFilter = [];
+            } else {
+                sektorArrayFilter.forEach(sektor => {
+
+                    let sektorInput = $(`.sektor-select input#sektor-${sektor}[type='checkbox']`);
+
+                    sektorInput[0].checked = true;
+                    addAppliedFilter(sektorInput[0].id, sektor, sektorInput.siblings('.checkbox-title').html(), 'sektor');
+                });
+            }
+
+            if (contractType != null) {
+                $(`input[name="contractType"][value="${contractType}"]`).prop('checked', true);
+            } else {
+                $('input[name="contractType"][value="0"]').prop('checked', true);
+            }
+            // WE CAN TALK ABOUT THE NEXT PART OF THE CODE. NOT THE ONE ABOVE. JUST. DO. NOT
+
+            let isOn = window.localStorage.getItem("allFor") === 'true' ? true : false;
+            let isOnAwaiting = window.localStorage.getItem("awaitingUser") === 'true' ? true : false;
+            let isOnlongerThan48 = window.localStorage.getItem("longerThan48") === 'true' ? true : false;
+
+            let allDocumentsToggle = $("#toggle-all-documents");
+            let awaitingUserToggle = $("#awaitingUser");
+            let longerThan48Toggle = $("#longerThan48");
+
+            if (isOn && allDocumentsToggle.length) {
+                allDocumentsToggle[0].checked = true;
+            }
+
+            if (isOnAwaiting && awaitingUserToggle.length) {
+                awaitingUserToggle[0].checked = true;
+            }
+
+            if (isOnlongerThan48 && longerThan48Toggle.length) {
+                longerThan48Toggle[0].checked = true;
+            }
+
+            let allFor = {
+                forTypeId: parseInt(@ViewBag.UserRole),
+                isOn: isOn
+            };
+
+           let awaitingUser = {
+                forTypeId: parseInt(@ViewBag.UserRole),
+                isOn: isOnAwaiting
+            };
+
+            let longerThan48 = {
+                isOn: isOnlongerThan48
+            };
+
+            let dateFrom = JSON.parse(window.localStorage.getItem('dateFrom'));
+            let dateTo = JSON.parse(window.localStorage.getItem('dateTo'));
+
+            if (dateFrom) {
+                addFilterToLocalStorage("dateFrom", dateFrom);
+                addDateAppliedFilter("From", dateFrom);
+            }
+
+            if (dateTo) {
+                addFilterToLocalStorage("dateTo", dateTo);
+                addDateAppliedFilter("To", dateTo);
+            }
+
+            var url = '@Url.Action("LoadData")';
+            var urlDetail = '@Url.Action("Details")';
+            var urlDelete = '@Url.Action("Delete")';
+            var table = $('#example').DataTable({
+                "dom": "lfBrtip",
+                "buttons": [
+                    {
+                        text: '<i class="fas fa-file-excel"></i>',
+                        extend: "excel",
+                        action: function(e, dt, button, config) {
+                            config.exportOptions = {
+                                columns: exportIndexes
+                            }
+
+                            $.fn.dataTable.ext.buttons.excelHtml5.action.call(this, e, dt, button, config);
+                        },
+                        className: "btn btn-lg btn-outline-ccess text-center",
+                        title: function () { return getExportFileName(); },
+                        filename: function () { return getExportFileName(); },
+                        download: 'open'
+                    },
+                    {
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        extend: "pdfHtml5",
+                        action: function(e, dt, button, config) {
+                            config.exportOptions = {
+                                columns: exportIndexes
+                            }
+
+                            let calculatedFontSize = 10; // Max value
+
+                            if (exportIndexes.length === 8 || exportIndexes.length === 9) {
+                                calculatedFontSize = 8;
+                            } else if (exportIndexes.length === 10) {
+                                calculatedFontSize = 7;
+                            } else if (exportIndexes.length === 11) {
+                                calculatedFontSize = 6;
+                            }
+
+                            config.customize = function(doc) {
+                                doc.defaultStyle.fontSize = calculatedFontSize;
+                            }
+
+                            $.fn.dataTable.ext.buttons.pdfHtml5.action.call(this, e, dt, button, config);
+                        },
+                        className: "btn btn-lg btn-outline-danger text-center",
+                        title: function () { return getExportFileName(); },
+                        filename: function () { return getExportFileName(); },
+                        download: 'open'
+                    },
+                ],
+                "processing": true, // for show progress bar
+                "serverSide": true, // for process server side
+                "filter": true, // this is for disable filter (search box)
+                "orderMulti": false, // for disable multiple column at once
+                "ajax": {
+                    "url": url,   //"/Document/LoadData",
+                    "contentType": "application/json",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data": function (d) {
+                        // Ovde filteri
+
+                        d.ShowAll = allFor;
+                        d.AwaitingUser = awaitingUser;
+                        d.LongerThan48 = longerThan48;
+                        d.Partners = partnersArrayFilter;
+                        d.Executors = executorsArrayFilter;
+                        d.Sectors = sektorArrayFilter;
+                        d.AdvancedFilters = advancedFilters;
+                        d.ContractType = contractType;
+
+                        // Ok, I know this code is weird, but this is what my brain is cabaple of, and it works.
+                        if (dateFrom) {
+                            $("#dateFrom").val(dateFrom);
+                        }
+
+                        if (dateTo) {
+                            $("#dateTo").val(dateTo);
+                        }
+
+                        dateFrom = $("#dateFrom").val();
+                        dateTo = $("#dateTo").val();
+
+                        d.DateFrom = dateFrom;
+                        d.DateTo = dateTo;
+
+                        console.log(d);
+                        return JSON.stringify(d);
+                    }
+                },
+                "columnDefs":
+                    [
+                        {
+                            "targets": [0, 13],
+                            "visible": false,
+                            "searchable": false
+                        },
+                        {
+                            "targets": [8],
+                            "orderable": false,
+                            "searchable": false
+                        },
+                        {
+                            "targets": [12, 6],
+                            "orderable": false
+                        }
+                    ],
+                "columns": [
+                    { "data": "Id", "name": "Id", "autoWidth": true },
+                    { "data": "Name", "name": "Name", "autoWidth": true, },
+                    { "data": "DocumentType", "name": "DocumentType", "autoWidth": true },
+                    { "data": "DocumentNumber", "name": "DocumentNumber", "autoWidth": true },
+                    { "data": "Sector", "name": "Sector", "autoWidth": true },
+                    { "data": "Partner", "name": "Partner", "autoWidth": true },
+                    {
+                        "data": "Status",
+                        "render": function (data, type, row, meta) {
+                            let content = `${row.StatusName}`;
+
+                            @*if (row.SectorApproved !== null && row.StatusId !== @DocumentStatus.Approved && row.StatusId !== @DocumentStatus.ReturnedToSupplier) {
+                                content += row.SectorApproved == 1 ? ` - <span style='color: green';>Odobreno</span>` : ` - <span style='color: red';>Odbijeno</span>`;
+                            }*@
+
+                            return content;
+                        }
+                    },
+                    { "data": "ContractNumber", "name": "ContractNumber", "autoWidth": true, },
+                    { "data": "ReceivedDate", "name": "ReceivedDate", "autoWidth": true, },
+                    { "data": "CurrencyDate", "name": "CurrencyDate", "autoWidth": true, },
+                    {
+                        "data": "LastStatusChangeDate", "name": "LastStatusChangeDate", "autoWidth": true,
+                    },
+                    {
+                        "render": function (data, type, row, meta) {
+                            return `<button class="btn btn-success preview-document" ${row.DocumentFileName ? '' : 'disabled' }><i class="fas fa-eye"></i></button>`;
+                        }
+                    },
+                    {
+                        "render": function (data, type, full, meta) { return '<a class="btn btn-info" id="ml-2" href="#"><i class="fas fa-search"></i></a>'; }
+                    },
+                    {
+                        "render": function(data, type, full, meta) {
+                            let orderNumber = meta.row + 1;
+
+                            return orderNumber;
+                        }
+                    }
+                ],
+                rowCallback: function (row, data) {
+                    row.classList.add('document-table-row');
+
+                    console.log(data.Comment);
+                    if (data.Comment) {
+                        row.classList.add('has-comment');
+                    }
+
+                    // Change colors if the status is rejected or approved
+                    let color = data.StatusId === @DocumentStatus.Approved ? 'green' : data.StatusId === @DocumentStatus.ReturnedToSupplier ? 'red' : 'black';
+
+                    $(`td:eq(5)`, row).css({
+                        'color': color,
+                    });
+
+                    // LET IT BE KNOWN: JAVASCRIPT IS TRASH. Jovan, 01.09.2020
+                    let dateSplit = data.LastStatusChangeDate.split('-');
+                    let dateFormatted = `${dateSplit[2]}-${dateSplit[1]}-${dateSplit[0]}`;
+
+                    let lastChangeDate = new Date(dateFormatted);
+                    let today = new Date();
+
+                    let daysDifference = Math.ceil((today - lastChangeDate) / (1000 * 60 * 60 * 24));
+
+                    let isSectorRecorder = @(ViewBag.UserRole) === @(UserRoles.SectorRecorder);
+                    let isExecutor = @(ViewBag.UserRole) === @(UserRoles.Executor);
+                    let isHigherExecutor = @(ViewBag.UserRole) === @(UserRoles.HigherExecutor);
+
+                    let isCorrectRole = isSectorRecorder || isExecutor || isHigherExecutor;
+                    let isCorrectStatus = data.StatusId === @(DocumentStatus.ExecutorSentToSector);
+
+                    if (isCorrectRole && daysDifference >= 3 && isCorrectStatus) {
+                        $(`td`, row).css({
+                            'color': '#C81F00',
+                        });
+                    }
+                }
+            });
+
+
+            $('#export-modal input[type="checkbox"]').on('change', function(){
+                exportIndexes.splice(exportIndexes.indexOf(13), 1);
+
+                let isChecked = this.checked;
+                let columnIndex = parseInt(this.id.split('-')[1]);
+                let indexInExportArray = exportIndexes.indexOf(columnIndex);
+
+                if (indexInExportArray !== -1) {
+                    if (!isChecked) {
+                        exportIndexes.splice(indexInExportArray, 1);
+                    }
+                } else {
+                    if (isChecked) {
+                        exportIndexes.push(columnIndex);
+                    }
+                }
+
+                exportIndexes.sort((a,b) => { return a - b});
+                exportIndexes = [13].concat(exportIndexes);
+            });
+
+            $('input[name="contractType"]').on('change', function() {
+                contractType = this.value;
+
+                addFilterToLocalStorage("contractType", contractType);
+                table.draw();
+            });
+
+            let perPage = parseInt(window.localStorage.getItem("perPage"));
+
+            if (perPage) {
+                table.page.len(perPage).draw();
+
+                $("#per-page-select p.selected-option").html(perPage);
+            }
+
+            $('#create-document-toggle').on('click', function() {
+                $('#create-document-modal').addClass('active');
+            });
+
+
+            function getExportFileName() {
+                var d = new Date();
+                var n = `Fakture Export ${d.getDate()} / ${d.getMonth() + 1} / ${d.getFullYear()}`;
+                return  n;
+            }
+
+            $("#toggle-all-documents").on('change', function () {
+                let isChecked = this.checked;
+                allFor.isOn = isChecked;
+
+                addFilterToLocalStorage("allFor", isChecked);
+                table.draw();
+            });
+
+            $("#awaitingUser").on('change', function () {
+                let isChecked = this.checked;
+                awaitingUser.isOn = isChecked;
+
+                addFilterToLocalStorage("awaitingUser", isChecked);
+                table.draw();
+            });
+
+            $("#longerThan48").on('change', function () {
+                let isChecked = this.checked;
+                longerThan48.isOn = isChecked;
+
+                addFilterToLocalStorage("longerThan48", isChecked);
+                table.draw();
+            });
+
+            $("#dateFrom").on('change', function () {
+                let value = this.value;
+
+                if (value !== '') {
+                    addFilterToLocalStorage("dateFrom", value);
+                    addDateAppliedFilter("From", value);
+                }
+
+                table.draw();
+            });
+
+            $("#dateTo").on('change', function () {
+                let value = this.value;
+
+                if (value !== '') {
+                    addFilterToLocalStorage("dateTo", value);
+                    addDateAppliedFilter("To", value);
+                }
+
+                table.draw();
+            });
+
+            $(".partner-select input[type='checkbox']").on('change', function () {
+                let value = parseInt(this.value);
+                let valueInArray = (partnersArrayFilter.indexOf(value) != -1);
+                let $this = $(this);
+
+                if (this.checked && !valueInArray) {
+                    partnersArrayFilter.push(value);
+                    addAppliedFilter(this.id, value, $this.siblings('.checkbox-title').html(), 'partner');
+                } else if (valueInArray) {
+                    partnersArrayFilter.splice(partnersArrayFilter.indexOf(value), 1);
+                    $(`.applied-filter[data-value="${value}"][data-for="partner"]`).remove();
+                }
+
+                addFilterToLocalStorage("partnerFilters", partnersArrayFilter);
+                table.draw();
+            });
+
+            $(".executor-select input[type='checkbox']").on('change', function () {
+                let value = parseInt(this.value);
+                let valueInArray = (executorsArrayFilter.indexOf(value) != -1);
+                let $this = $(this);
+
+                if (this.checked && !valueInArray) {
+                    executorsArrayFilter.push(value);
+                    addAppliedFilter(this.id, value, $this.siblings('.checkbox-title').html(), 'executor', 'likvidator');
+                } else if (valueInArray) {
+                    executorsArrayFilter.splice(executorsArrayFilter.indexOf(value), 1);
+                    $(`.applied-filter[data-value="${value}"][data-for="executor"]`).remove();
+                }
+
+                addFilterToLocalStorage("executorFilters", executorsArrayFilter);
+                table.draw();
+            });
+
+            $(".sektor-select input[type='checkbox']").on('change', function () {
+                let value = parseInt(this.value);
+                let valueInArray = (sektorArrayFilter.indexOf(value) != -1);
+                let $this = $(this);
+
+                if (this.checked && !valueInArray) {
+                    sektorArrayFilter.push(value);
+                    addAppliedFilter(this.id, value, $this.siblings('.checkbox-title').html(), 'sektor');
+                } else if (valueInArray) {
+                    sektorArrayFilter.splice(sektorArrayFilter.indexOf(value), 1);
+                    $(`.applied-filter[data-value="${value}"][data-for="sektor"]`).remove();
+                }
+
+                addFilterToLocalStorage("sektorFilters", sektorArrayFilter);
+                table.draw();
+            });
+
+            $('#example tbody').on('click', '.preview-document', function (e) {
+                e.preventDefault();
+
+                var data = table.row($(this).parents('tr')).data();
+
+                previewDocument(data.DocumentFileName);
+            });
+
+            $('#example tbody').on('click', '#ml-2', function () {
+                var data = table.row($(this).parents('tr')).data();
+                var url = '@Url.Action("Details", "Document")?Id=' + data.Id; //"/Document/Details/" + data.Id;
+                window.location.href = url;
+            });
+
+
+            $('.recorder-select input[type="checkbox"]').on('change', function() {
+                let value = parseInt(this.value);
+                let isChecked = this.checked;
+                let isInArray = (advancedFilters.recorders.indexOf(value) !== -1);
+
+                if (isChecked && !isInArray) {
+
+                    advancedFilters.recorders.push(value);
+                    this.setAttribute('data-is-on', 'true');
+
+                } else if(!isChecked && isInArray) {
+
+                    advancedFilters.recorders.splice(advancedFilters.recorders.indexOf(value), 1);
+                    this.setAttribute('data-is-on', 'false');
+
+                }
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('.created-at-input').on('change', function() {
+                let value = this.value;
+                let type = this.getAttribute('data-type');
+
+                if (value !== '' && value !== null) {
+                    this.setAttribute('data-is-on', 'true');
+                } else {
+                    this.setAttribute('data-is-on', 'false');
+                }
+
+                if (type === 'from') {
+                    advancedFilters.createdAtDate.from = value;
+                } else if (type === 'to') {
+                    advancedFilters.createdAtDate.to = value;
+                }
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('.document-date-input').on('change', function() {
+                let value = this.value;
+                let type = this.getAttribute('data-type');
+
+                if (value !== '' && value !== null) {
+                    this.setAttribute('data-is-on', 'true');
+                } else {
+                    this.setAttribute('data-is-on', 'false');
+                }
+
+                if (type === 'from') {
+                    advancedFilters.documentDate.from = value;
+                } else if (type === 'to') {
+                    advancedFilters.documentDate.to = value;
+                }
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('#status-select .option-replacement').on('click', function(e) {
+                let value = parseInt(this.getAttribute('data-value'));
+                e.stopPropagation();
+
+                advancedFilters.status = value;
+
+                if (value !== '' && value !== null) {
+                    this.setAttribute('data-is-on', 'true');
+                } else {
+                    this.setAttribute('data-is-on', 'false');
+                }
+
+                $(this).parents('.options').removeClass('active');
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('#document-type-select .option-replacement').on('click', function(e) {
+                let value = parseInt(this.getAttribute('data-value'));
+                e.stopPropagation();
+
+                if (value !== '' && value !== null) {
+                    this.setAttribute('data-is-on', 'true');
+                } else {
+                    this.setAttribute('data-is-on', 'false');
+                }
+
+                advancedFilters.documentType = value;
+                $(this).parents('.options').removeClass('active');
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('.document-amount-input').on('change', function() {
+                let value = parseInt(this.value);
+                let type = this.getAttribute('data-type');
+
+                if (!value) {
+                    value = 0;
+                }
+
+                if (value !== '' && value !== null) {
+                    this.setAttribute('data-is-on', 'true');
+                } else {
+                    this.setAttribute('data-is-on', 'false');
+                }
+
+                if (type === 'from') {
+                    advancedFilters.amount.from = value;
+                } else if (type === 'to') {
+                    advancedFilters.amount.to = value;
+                }
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('#delivery-type-select .option-replacement').on('click', function(e) {
+                let value = parseInt(this.getAttribute('data-value'));
+                e.stopPropagation();
+
+                if (value !== '' && value !== null) {
+                    this.setAttribute('data-is-on', 'true');
+                } else {
+                    this.setAttribute('data-is-on', 'false');
+                }
+
+                advancedFilters.deliveryType = value;
+                $(this).parents('.options').removeClass('active');
+
+                addFilterToLocalStorage("advancedFilters", advancedFilters);
+                //console.log(advancedFilters);
+            });
+
+            $('#hide-advanced-filters').on('click', function() {
+                $('#advanced-filters').removeClass('active');
+            });
+
+            function addDateAppliedFilter(type, value) {
+                let output = `
+                    <div class="applied-filter date-filter" data-for="${type}">
+
+                        <div class="applied-filter-title">
+                            <span class="applied-title-for">
+                                ${type}:
+                            </span>
+
+                            <span class="applied-filter-value">
+                                ${value}
+                            </span>
+                        </div>
+
+                        <div class="cancel-filter date">
+                            <i class="fa fa-times"></i>
+                        </div>
+
+                    </div>
+                `;
+
+                $('.applied-filters').append(output);
+            }
+
+            function addAppliedFilter(filterId, filterValue, displayValue, filterType, filterTypeName = filterType) {
+                let output = `
+                    <div class="applied-filter" data-for="${filterType}" data-value="${filterValue}" data-filter-id="${filterId}">
+
+                        <div class="applied-filter-title">
+                            <span class="applied-title-for">
+                                ${filterTypeName}:
+                            </span>
+
+                            <span class="applied-filter-value">
+                                ${displayValue}
+                            </span>
+                        </div>
+
+                        <div class="cancel-filter">
+                            <i class="fa fa-times"></i>
+                        </div>
+
+                    </div>
+                `;
+
+                $('.applied-filters').append(output);
+            }
+
+            $(document).on('click', '.cancel-filter.date', function() {
+                let $this = $(this);
+                let type = $this.parents('.applied-filter').attr('data-for');
+
+                $this.parents('.applied-filters').find(`.applied-filter.date-filter[data-for=${type}]`).remove();
+
+                let dateInput = $(`#date${type}`);
+
+                dateInput.val('');
+
+                if (type === 'From') {
+                    dateFrom = '';
+                } else if (type === 'To') {
+                    dateTo = '';
+                }
+
+                window.localStorage.removeItem(`date${type}`);
+
+                table.draw();
+            });
+
+            $(document).on('click', '.cancel-filter:not(.advanced, .date)', function() {
+                let $this = $(this);
+                let appliedFilter = $this.parents('.applied-filter');
+                let filterType = appliedFilter.attr('data-for');
+                let filterValue = appliedFilter.attr('data-value');
+
+                let correspondingCheckbox = $(`.${filterType}-select input[type="checkbox"][value="${filterValue}"]`);
+
+                correspondingCheckbox[0].checked = false;
+                correspondingCheckbox.trigger('change');
+
+                $this.parents('.applied-filters').find(`.applied-filter[data-value="${filterValue}"]`).remove();
+            });
+
+            $(document).on('click', '.cancel-filter.advanced', function() {
+                let $this = $(this);
+
+                $this.parents('.applied-filter').remove();
+                $('[data-is-on="true"]').attr('data-is-on', 'false');
+
+                advancedFilters = {
+                    recorders: [],
+                    createdAtDate: {
+                        from: '',
+                        to: ''
+                    },
+                    documentDate: {
+                        from: '',
+                        to: ''
+                    },
+                    status: -1,
+                    documentType: -1,
+                    amount: {
+                        from: 0,
+                        to: 0
+                    },
+                    deliveryType: -1
+                };
+
+                window.localStorage.removeItem("advancedFilters");
+                table.draw();
+            });
+
+            $(document).on('click', function(e) {
+                e.stopPropagation();
+
+                $('.custom-select-wrapper .options.active').removeClass('active');
+            });
+        });
+
+
+        function addFilterToLocalStorage(filterName, filterValue) {
+            // I need to do some kind of preparation. Make the object this function friendly.
+
+            let filterToStore = JSON.stringify(filterValue);
+
+            if (window.localStorage.getItem(filterName)){
+                window.localStorage.removeItem(filterName);
+            }
+
+            window.localStorage.setItem(filterName, filterToStore);
+        }
+
+    </script>
+    <script src="~/js/document-index.js"></script>
+    <!--jquery-->
+    @*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+    <script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+    <script>
+        $(function () {
+            $('.select2').select2()
+        })
+    </script>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+}
+
+
+

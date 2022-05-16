@@ -1,0 +1,18 @@
+﻿@model NTEDoc.DataRepository.Document
+
+<div class="custom-modal" id="referent-processing-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <div class="modal-title">Unesite komentar</div>
+
+        <form enctype="multipart/form-data" method="post" asp-action="ChangeStatusReferentProcessed">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" name="sectorApproval" value="1" />
+
+            <textarea class="form-control" rows="3" name="comment"></textarea>
+
+            <input type="submit" value="Prosledi likvidatoru" class="bttn bttn-regular bttn-regular-success">
+        </form>
+    </div>
+</div>

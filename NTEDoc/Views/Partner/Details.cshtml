@@ -1,0 +1,147 @@
+﻿@model NTEDoc.DataRepository.Partner
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/New/_Layout.cshtml";
+}
+
+
+@section Styles {
+    <link href="~/css/details.css" rel="stylesheet" />
+}
+
+
+@section Links {
+    <div class="nav-link">
+        <a class="link-head" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-alt" aria-hidden="true"></i>
+            <span class="nav-link-text">
+                Dokumenti
+            </span>
+        </a>
+        <div class="link-body" style="display: none !important">
+            <button class="bttn bttn-regular bttn-regular-success create-document">Kreiraj dokument <i class="fa fa-plus-circle"></i> </button>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="show-all" class="checkbox-title">Prikazi sve dokumente</label>
+                <input type="checkbox" id="show-all">
+                <label for="show-all"></label>
+            </div>
+
+            <div class="custom-checkbox-wrapper">
+                <label for="awaitingUser" class="checkbox-title">Za obradu</label>
+                <input type="checkbox" id="awaitingUser">
+                <label for="awaitingUser"></label>
+            </div>
+
+            <div class="document-count">
+                <div class="custom-select-wrapper" id="per-page-select">
+                    <div class="select-replacement">
+                        <p class="selected-option" style="color: #15AF1B">
+                            10
+                        </p>
+
+                        <div class="options">
+                            <div class="option-replacement selected" data-value="10">10</div>
+                            <div class="option-replacement" data-value="20">20</div>
+                            <div class="option-replacement" data-value="50">50</div>
+                            <div class="option-replacement" data-value="100">100</div>
+                            <div class="option-replacement" data-value="300">300</div>
+                        </div>
+                    </div>
+
+                    <select name="approved-state" id="approved-state">
+                        <option value="10" selected>10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50" selected>50</option>
+                        <option value="100" selected>100</option>
+                        <option value="300" selected>300</option>
+                    </select>
+                </div>
+                <span>dokumenata po strani</span>
+            </div>
+
+            <div class="documents-search">
+                <input type="text" placeholder="Pretraga...">
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter opened">
+                    <div class="filter-title">Partner</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Likvidator</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Sektor</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+
+            <div class="document-filters">
+                <div class="document-filter">
+                    <div class="filter-title">Datum prijema</div>
+                    <div class="filter-body">
+                        *content*
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole("99"))
+    {
+        <div class="nav-link">
+            <a class="link-head" asp-controller="Admin" asp-action="Index">
+                <i class="nav-link-icon fas fa-user-shield"></i>
+                <span class="nav-link-text">
+                    Admin panel
+                </span>
+            </a>
+        </div>
+    }
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Partner" asp-action="Index">
+            <i class="nav-link-icon fas fa-handshake"></i>
+            <span class="nav-link-text">
+                Partneri
+            </span>
+        </a>
+    </div>
+    <div class="nav-link">
+        <a class="link-head" asp-controller="Contract" asp-action="Index">
+            <i class="nav-link-icon fas fa-file-contract"></i>
+            <span class="nav-link-text">
+                Ugovori
+            </span>
+        </a>
+    </div>
+}
+
+
+
+<h2 class="main-page-heading">Detalji</h2>
+
+<div class="document-details">
+    <h4 class="document-title">@Html.DisplayFor(model => model.naziv)</h4>
+
+    <div class="document-details-content">
+        <div class="document-detail">
+            <h6 class="detail-name">@Html.DisplayNameFor(model => model.naziv)</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.naziv)</p>
+        </div>
+    </div>
+</div>

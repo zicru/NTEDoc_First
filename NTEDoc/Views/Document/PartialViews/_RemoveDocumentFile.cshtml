@@ -1,0 +1,15 @@
+﻿
+<div class="custom-modal" id="delete-file-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <div class="modal-title">Da li ste sigurni?</div>
+
+        <form enctype="multipart/form-data" method="post" asp-action="DeleteDocumentFile">
+            <input type="hidden" name="fileId" value="" />
+
+            <input type="submit" value="Obriši fajl" class="bttn bttn-regular bttn-regular-danger add-file">
+            <input type="button" value="Odustani" class="bttn bttn-regular bttn-regular-white cancel">
+        </form>
+    </div>
+</div>

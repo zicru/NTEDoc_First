@@ -1,0 +1,32 @@
+﻿@model NTEDoc.DataRepository.Document
+
+
+@foreach (var file in Model.DocumentFiles.Where(x => x.IsActive == 1))
+{
+    <div class="custom-modal edit-file-modal" data-file-id="@file.DocumentFileId">
+        <div class="custom-modal-content">
+            <div class="modal-close">&times;</div>
+
+            <div class="modal-title">Izmenite fajl</div>
+
+            <form enctype="multipart/form-data" method="post" asp-action="ChangeDocumentFile">
+                <input type="hidden" value="@file.DocumentFileId" name="DocumentFileId" />
+                <input type="hidden" value="@file.DocumentId" name="DocumentId" />
+                <input type="hidden" value="@file.FileName" name="FileName" />
+                <input type="hidden" value="@file.IsActive" name="IsActive" />
+                <input type="hidden" value="@file.IsPrimaryFile" name="IsPrimaryFile" />
+
+                <div class="form-group">
+                    <label for="fileTitle">Ime fajla</label>
+                    <input type="text" value="@file.FileTitle.Trim()" id="fileTitle" name="FileTitle">
+                </div>
+
+                <div class="form-group">
+                    <input type="file" class="" name="newDocumentFile">
+                </div>
+
+                <input type="submit" value="Izmeni" class="bttn bttn-regular bttn-regular-success add-file">
+            </form>
+        </div>
+    </div>
+}

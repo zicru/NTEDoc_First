@@ -1,0 +1,53 @@
+﻿@model IEnumerable<NTEDoc.DataRepository.DocumentType>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+
+
+<section class="content">
+    <div class="col-xs-12">
+        <h1>Vrste dokumenata</h1>
+        <div class="box box-default">
+            <div class="box-header with-border">
+            </div>
+            <div class="box-body">
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-success">
+                    Dodaj
+                </button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Naziv)
+                            </th>
+                            
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Naziv)
+                                </td>
+                                
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </section>
+
+<partial name="PartialViews/_CreatePartial" model="@ViewBag.DocumentType" />

@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>NTEDoc | @ViewData["Title"]  </title>
+
+    <link href="~/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700&display=swap" rel="stylesheet">
+
+    <link href="~/css/common.css" rel="stylesheet" />
+
+    <link rel="icon" type="image/png" sizes="16x16" href="~/images/icons/folder.png">
+
+    @RenderSection("Styles", false)
+</head>
+<body>
+
+
+    <div class="wrapper">
+        <nav class="main-navigation">
+            <div id="toggle-nav" class="active">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+
+            <div class="nav-links">
+                @RenderSection("Links", required: true)
+            </div>
+        </nav>
+
+        <header class="main-header">
+            <form class="logout-form" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="nav-link btn btn-link text-dark">Odjavi se</button>
+            </form>
+        </header>
+
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <script src="~/js/site.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

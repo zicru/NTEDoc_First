@@ -1,0 +1,17 @@
+﻿
+@model NTEDoc.DataRepository.Document
+
+<div class="custom-modal" id="send-to-executor-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <div class="modal-title">Unesite komentar</div>
+
+        <form enctype="multipart/form-data" method="post" asp-action="ChangeStatusSentToExecutor">
+            <input type="hidden" asp-for="Id" />
+            <textarea class="form-control" rows="3" name="comment"></textarea>
+
+            <input type="submit" value="Prosledi likvidatoru" class="bttn bttn-regular bttn-regular-success">
+        </form>
+    </div>
+</div>

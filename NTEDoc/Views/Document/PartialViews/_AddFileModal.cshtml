@@ -1,0 +1,30 @@
+﻿@model NTEDoc.DataRepository.Document
+
+<div class="custom-modal" id="add-file-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <div class="modal-title">Unesite komentar</div>
+
+        <form enctype="multipart/form-data" method="post" asp-action="AddFilesToDocument">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label for="fileTitle">Ime fajla</label>
+                <input type="text" class="" name="fileTitle" id="fileTitle">
+            </div>
+
+            <div class="form-group">
+                <label for="newDocumentFile">Fajl</label>
+                <input type="file" class="" name="newDocumentFile" id="newDocumentFile">
+            </div>
+
+            <div class="form-group">
+                <label for="isPrimary">Primarni fajl</label>
+                <input type="checkbox" class="" name="isPrimary" id="isPrimary" value="1" @(Model.DocumentFiles.Where(x => x.IsPrimaryFile == 1 && x.IsActive == 1).Count() == 0 ? "checked" : "disabled")>
+            </div>
+
+            <input type="submit" value="Dodaj fajl" class="bttn bttn-regular bttn-regular-success add-file">
+        </form>
+    </div>
+</div>

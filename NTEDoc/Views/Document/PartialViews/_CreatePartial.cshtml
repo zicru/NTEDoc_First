@@ -1,0 +1,217 @@
+﻿@model NTEDoc.DataRepository.Document
+
+
+<div class="custom-modal" id="create-document-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <h3 class="modal-title">Dodajte novi dokument</h3>
+
+        <form enctype="multipart/form-data" method="post" asp-action="Create" class="create-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CreatedByUserId" value="@ViewBag.UserId" />
+            <input type="hidden" asp-for="CreatedDate" />
+
+            <div class="edit-fields">
+                <div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ReceivedDate" class="control-label"></label>
+                        <input asp-for="ReceivedDate" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="ReceivedDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CurrencyDate" class="control-label"></label>
+                        <input asp-for="CurrencyDate" class="form-control" />
+                        <span asp-validation-for="CurrencyDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DocumentNumber" class="control-label"></label>
+                        <input asp-for="DocumentNumber" class="form-control" autocomplete="off" id="documentNumberInput" />
+                        <span asp-validation-for="DocumentNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ReferenceNumber" class="control-label"></label>
+                        <input asp-for="ReferenceNumber" class="form-control" autocomplete="off"/>
+                        <span asp-validation-for="ReferenceNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="SectorId" class="control-label"></label>
+                        <select asp-for="SectorId" class="form-control select2" asp-items="ViewBag.SectorList" style="width: 100%;">
+                            <option selected="selected" value="">Izaberite sektor</option>
+                        </select>
+                        <span asp-validation-for="SectorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="documentFile" class="control-label">Primarni fajl</label>
+                        <input id="documentFile" type="file" class="form-control" name="documentFile" />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-group">
+                        <label asp-for="PartnerId" class="control-label"></label>
+                        <select id="selPartner" asp-for="PartnerId" class="form-control select2" asp-items="ViewBag.PartnerList" style="width: 100%;">
+                            <option selected="selected" value="">Izaberite partnera</option>
+                        </select>
+                        <span asp-validation-for="PartnerId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CompanyContractId" class="control-label"></label>
+                        <select id="contractSelect" class="form-control" asp-for="CompanyContractId" style="width: 100%;">
+                            <option selected value="">Bez ugovora</option>
+                        </select>
+                        <span asp-validation-for="CompanyContractId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="DeliveryTypeId" class="control-label"></label>
+                        <select asp-for="DeliveryTypeId" class="form-control " asp-items="ViewBag.DeliveryTypeList" style="width: 100%;">
+                            <option selected="selected" value="">Izaberite način dostave</option>
+                        </select>
+                        <span asp-validation-for="DeliveryTypeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LikvidatorId" class="control-label"></label>
+                        <select asp-for="LikvidatorId" class="form-control " asp-items="ViewBag.ExecutorList" style="width: 100%;">
+                            <option selected disabled value="">Izaberite likvidatora</option>
+                        </select>
+                        <span asp-validation-for="LikvidatorId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ControllerId" class="control-label"></label>
+                        <select asp-for="ControllerId" class="form-control " asp-items="ViewBag.ControllerList" style="width: 100%;">
+                            <option selected disabled value="">Izaberite kontrolora</option>
+                        </select>
+                        <span asp-validation-for="ControllerId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="DocumentTypeId" class="control-label"></label>
+                        <select asp-for="DocumentTypeId" class="form-control " asp-items="ViewBag.TypeList" id="documentTypeSelect">
+                            <option selected="selected" value="">Izaberite tip dokumenta</option>
+                        </select>
+                        <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Amount" class="control-label"></label>
+                        <input asp-for="Amount" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <input type="submit" value="Sačuvaj izmene" class="bttn bttn-regular bttn-regular-success">
+        </form>
+    </div>
+</div>
+
+<script>
+
+    var partnerSelect = document.querySelector('#selPartner'),
+        contractSelect = document.querySelector('#contractSelect'),
+        executorSelect = document.querySelector('#LikvidatorId')
+        documentNumberInput = document.querySelector('#documentNumberInput')
+        documentTypeSelect = document.querySelector('#documentTypeSelect')
+        createForm = document.querySelector('.create-form');
+
+    let valuesToCheck = {
+        partner: '',
+        documentNumber: '',
+        documentType: ''
+    };
+
+    const checkDocument = function () {
+        let xhr = new XMLHttpRequest();
+        let formData = new FormData();
+
+        formData.append('partner', valuesToCheck.partner);
+        formData.append('documentNumber', valuesToCheck.documentNumber);
+        formData.append('documentType', valuesToCheck.documentType);
+
+        xhr.open('POST', `/Document/CheckExisting`, true);
+
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                let data = JSON.parse(this.responseText);
+
+                let documentExists = data.DocumentExists;
+
+                console.log(documentExists);
+                if (documentExists) {
+                    alert("Dokument sa navedenim brojem, partnerom i tipom već postoji. Proverite podatke pre nego što ga kreirate.");
+                }
+
+            } else if (this.status !== 200) {
+                // Implement error handler
+                console.log('err');
+            }
+        }
+
+        xhr.send(formData);
+    }
+
+    contractSelect.onchange = function() {
+        let executorId = this.querySelector('option:checked').getAttribute('data-executor');
+        let controllerId = this.querySelector('option:checked').getAttribute('data-controller');
+
+        executorSelect.value = executorId;
+        document.querySelector("#ControllerId").value = controllerId;
+
+        console.log(executorSelect);
+    }
+
+    documentTypeSelect.onchange = function () {
+        valuesToCheck.documentType = this.value;
+
+        checkDocument();
+    }
+
+    documentNumberInput.onchange = function () {
+        valuesToCheck.documentNumber = this.value;
+
+        checkDocument();
+    }
+
+    partnerSelect.onchange = function() {
+        let partnerId = this.value;
+
+        valuesToCheck.partner = partnerId;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', `/Document/GetBrUgovora?idPartnera=${partnerId}`, true);
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let output = '<option selected value="">Bez ugovora</option>',
+                    data = JSON.parse(this.responseText);
+                
+                if (!data) {
+                    console.log('its null or something');
+                    return;
+                };
+
+                data.forEach(contract => {
+                    output += `<option value="${contract.Value}" data-executor="${contract.Executor}" data-controller="${contract.Controller}">${contract.Text}</option>`
+                });
+
+                contractSelect.innerHTML = output;
+
+            } else if (this.status !== 200) {
+                // Implement error handler
+                console.log('err');
+            }
+        }
+
+        xhr.send();
+        checkDocument();
+    };
+
+
+</script>

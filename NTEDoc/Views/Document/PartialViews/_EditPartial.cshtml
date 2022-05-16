@@ -1,0 +1,148 @@
+﻿@model NTEDoc.DataRepository.Document
+@using Newtonsoft.Json;
+
+<div class="custom-modal" id="edit-document-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <h3 class="modal-title">Izmenite dokument</h3>
+
+        <form enctype="multipart/form-data" method="post" asp-action="Edit" class="edit-form">
+            <input type="hidden" asp-for="CreatedByUserId" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ReferenceNumber" />
+            <input type="hidden" asp-for="StatusId" />
+
+            <div class="edit-fields">
+                <div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ReceivedDate" class="control-label"></label>
+                        <input asp-for="ReceivedDate" class="form-control" autocomplete="off" readonly />
+                        <span asp-validation-for="ReceivedDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CurrencyDate" class="control-label"></label>
+                        <input asp-for="CurrencyDate" class="form-control" />
+                        <span asp-validation-for="CurrencyDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DocumentNumber" class="control-label"></label>
+                        <input asp-for="DocumentNumber" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="DocumentNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SectorId" class="control-label"></label>
+                        <select asp-for="SectorId" class="form-control select2" asp-items="ViewBag.SectorList" style="width: 100%;">
+                            <option selected="selected" value="">Izaberite sektor</option>
+                        </select>
+                        <span asp-validation-for="SectorId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LikvidatorId" class="control-label"></label>
+                        <select asp-for="LikvidatorId" class="form-control " asp-items="ViewBag.ExecutorList" style="width: 100%;">
+                            <option selected disabled value="">Izaberite likvidatora</option>
+                        </select>
+                        <span asp-validation-for="LikvidatorId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-group">
+                        <label asp-for="PartnerId" class="control-label"></label>
+                        <select id="selPartner" asp-for="PartnerId" class="form-control select2" asp-items="ViewBag.PartnerList" style="width: 100%;">
+                            <option selected="selected" value="">Izaberite partnera</option>
+                        </select>
+                        <span asp-validation-for="PartnerId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CompanyContractId" class="control-label"></label>
+                        <select id="contractSelect" class="form-control" asp-for="CompanyContractId" style="width: 100%;">
+                            <option value="">Bez ugovora</option>
+                        </select>
+                        <span asp-validation-for="CompanyContractId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="DeliveryTypeId" class="control-label"></label>
+                        <select asp-for="DeliveryTypeId" class="form-control " asp-items="ViewBag.DeliveryTypeList" style="width: 100%;">
+                            <option selected="selected" value="">Izaberite način dostave</option>
+                        </select>
+                        <span asp-validation-for="DeliveryTypeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="DocumentTypeId" class="control-label"></label>
+                        <select asp-for="DocumentTypeId" class="form-control " asp-items="ViewBag.TypeList">
+                            <option selected="selected" value="">Izaberite tip dokumenta</option>
+                        </select>
+                        <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Amount" class="control-label"></label>
+                        <input asp-for="Amount" type="number" step="0.01" min="0" class="form-control" placeholder="0.00" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ControllerId" class="control-label"></label>
+                        <select asp-for="ControllerId" class="form-control " asp-items="ViewBag.ControllerList" style="width: 100%;">
+                            <option selected disabled value="">Izaberite kontrolora</option>
+                        </select>
+                        <span asp-validation-for="ControllerId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <input type="submit" value="Sačuvaj izmene" class="bttn bttn-regular bttn-regular-success">
+        </form>
+    </div>
+</div>
+
+<script>
+
+    var partnerSelect = document.querySelector('#selPartner'),
+        contractSelect = document.querySelector('#contractSelect');
+
+    updateContracts();
+    partnerSelect.onchange = updateContracts;
+
+    function updateContracts() {
+        let partnerId = partnerSelect.value;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', `/Document/GetBrUgovora?idPartnera=${partnerId}`, true);
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let output = '<option selected value="">Bez ugovora</option>',
+                    data = JSON.parse(this.responseText);
+                
+                if (!data) {
+                    console.log('its null or something');
+                    return;
+                }
+
+                data.forEach(contract => {
+                    var contractId = @(Model.CompanyContractId);
+
+                    var isSelected = @(Model.CompanyContractId) === parseInt(contract.Value);
+
+                    output += `<option ${(isSelected ? 'selected' : '')} value="${contract.Value}">${contract.Text}</option>`
+                });
+
+                console.log(data);
+                contractSelect.innerHTML = output;
+
+            } else {
+                // Implement error handler
+            }
+        }
+
+        xhr.send();
+    }
+</script>
+

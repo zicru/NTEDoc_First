@@ -1,0 +1,78 @@
+﻿@model NTEDoc.DataRepository.Document
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <section class="content-header">
+        <div class="container">
+            <h1>Brisanje</h1>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <div class="card card-danger card-outline">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.CompanyContract.ArchiveNumber)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.CompanyContract.ArchiveNumber)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Partner)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Partner.naziv)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.ReceivedDate)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.ReceivedDate)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Amount)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Amount)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.DocumentNumber)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.DocumentNumber)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Sector.Naziv)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Sector.Naziv)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Likvidator)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Likvidator.FullName)
+                        </dd>
+                    </dl>
+                    <div>
+                        <a class="btn btn-danger" title="Obriši" asp-action="Delete" asp-route-id="@Model.Id" data-toggle="modal" data-target="#modal-danger"><i class="fas fa-trash"></i></a> |
+                        <a class="btn btn-light" title="Nazad na listu" asp-action="Index"><i class="fas fa-undo"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+        <partial name="PartialViews/_DeletePartial" model="@Model" />

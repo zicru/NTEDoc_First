@@ -1,0 +1,191 @@
+@model NTEDoc.DataRepository.Document
+
+<div class="filters-header">
+    <h5 class="filters-title">Napredni filteri</h5>
+
+    <button class="bttn" id="hide-advanced-filters">
+        <i class="fa fa-times"></i>
+    </button>
+</div>
+
+<div class="modal-content-wrapper">
+    <div class="modal-content-group select-filters">
+        <div class="advanced-filter-group">
+            <span class="filter-group-description">Izaberite evidentičare</span>
+
+            <div class="custom-select-wrapper recorder-select">
+                <div class="select-replacement">
+                    <i class="fas fa-angle-down"></i>
+
+                    <p class="selected-option">
+                        Evidentičari
+                    </p>
+
+                    <div class="options">
+
+                        @foreach (var item in ViewBag.Recorders)
+                        {
+                            <div class="custom-checkbox-wrapper option-replacement">
+                                <label for="recorder-@item.UserId" class="checkbox-title">@item.FullName</label>
+                                <input type="checkbox" value="@item.UserId" id="recorder-@item.UserId" data-is-on="false">
+                                <label for="recorder-@item.UserId">
+                                    <i class="fa fa-check"></i>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="advanced-filter-group">
+            <span class="filter-group-description">Izaberite status dokuemnta</span>
+
+            <div class="custom-select-wrapper" id="status-select">
+                <div class="select-replacement">
+                    <i class="fas fa-angle-down"></i>
+
+                    <p class="selected-option">
+                        Status dokumenta
+                    </p>
+
+                    <div class="options">
+
+                        @foreach (var status in ViewBag.Statuses)
+                        {
+                            <div class="option-replacement" data-value="@status.Id">@status.Name</div>
+                        }
+
+                    </div>
+                </div>
+
+                <select name="approved-state" id="approved-state">
+
+                    @foreach (var status in ViewBag.Statuses)
+                    {
+                        <option value="@status.Id">@status.Name</option>    
+                    }
+
+                </select>
+            </div>
+        </div>
+
+        <div class="advanced-filter-group">
+            <span class="filter-group-description">Izaberite tip dokumenta</span>
+
+            <div class="custom-select-wrapper" id="document-type-select">
+                <div class="select-replacement">
+                    <i class="fas fa-angle-down"></i>
+
+                    <p class="selected-option">
+                        Tip dokumenta
+                    </p>
+
+                    <div class="options">
+
+                        @foreach (var status in ViewBag.DocumentTypes)
+                        {
+                            <div class="option-replacement" data-value="@status.Id">@status.Naziv</div>
+                        }
+
+                    </div>
+                </div>
+
+                <select name="approved-state" id="approved-state">
+
+                    @foreach (var status in ViewBag.DocumentTypes)
+                    {
+                        <option value="@status.Id">@status.Naziv</option>    
+                    }
+
+                </select>
+            </div>
+        </div>
+
+
+        <div class="advanced-filter-group">
+            <span class="filter-group-description">Izaberite način dostave</span>
+
+            <div class="custom-select-wrapper" id="delivery-type-select">
+                <div class="select-replacement">
+                    <i class="fas fa-angle-down"></i>
+
+                    <p class="selected-option">
+                        Način dostave
+                    </p>
+
+                    <div class="options">
+
+                        @foreach (var deliveryType in ViewBag.DeliveryTypes)
+                        {
+                            <div class="option-replacement" data-value="@deliveryType.DeliveryTypeId">@deliveryType.Name</div>
+                        }
+
+                    </div>
+                </div>
+
+                <select name="approved-state" id="approved-state">
+
+                    @foreach (var deliveryType in ViewBag.DeliveryTypes)
+                    {
+                        <option value="@deliveryType.DeliveryTypeId">@deliveryType.Name</option>    
+                    }
+
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-content-group">
+        <div class="similar-filters">
+            <span class="similar-filters-description">Datum unosa u sistem</span>
+
+            <div class="advanced-filter-group">
+                <label for="createdAtFrom">Od</label>
+                <input type="date" id="createdAtFrom" class="created-at-input" data-type="from">
+            </div>
+
+            <div class="advanced-filter-group">
+                <label for="createdAtFrom">Do</label>
+                <input type="date" id="createdAtTo" class="created-at-input" data-type="to">
+            </div>
+        </div>
+        
+        <div class="similar-filters">
+            <span class="similar-filters-description">Datum dokumenta</span>
+            
+            <div class="advanced-filter-group">
+                <label for="documentDateFrom">Od</label>
+                <input type="date" id="documentDateFrom" class="document-date-input" data-type="from">
+            </div>
+
+            <div class="advanced-filter-group">
+                <label for="documentDateTo">Od</label>
+                <input type="date" id="documentDateTo" class="document-date-input" data-type="to">
+            </div>
+        </div>
+
+        <div class="similar-filters">
+            <span class="similar-filters-description">Iznos</span>
+            
+            <div class="advanced-filter-group">
+                <label for="amountFrom">Od</label>
+                <input type="number" id="amountFrom" class="document-amount-input" data-type="from">
+            </div>
+
+            <div class="advanced-filter-group">
+                <label for="amountFrom">Do</label>
+                <input type="number" id="amountTo" class="document-amount-input" data-type="to">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="bottom-actions">
+    <button class="bttn bttn-regular bttn-regular-success" id="submit-advanced-filters">
+        Primeni napredne filtere
+    </button>
+</div>
+

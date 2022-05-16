@@ -1,0 +1,135 @@
+@model NTEDoc.DataRepository.Document
+
+
+<div class="custom-modal" id="export-modal">
+    <div class="custom-modal-content">
+        <div class="modal-close">&times;</div>
+
+        <h3 class="modal-title">Izaberite kolone za izvoz</h3>
+
+        <div class="columns-export-wrapper">
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="column-1">
+                    <label for="column-1">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Naziv
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="column-2">
+                    <label for="column-2">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Tip
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" checked id="column-3">
+                    <label for="column-3">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Broj fakture
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" checked id="column-4">
+                    <label for="column-4">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Sektor
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" checked id="column-5">
+                    <label for="column-5">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Partner
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" checked id="column-6">
+                    <label for="column-6">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Status
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" checked id="column-7">
+                    <label for="column-7">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Broj ugovora
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="column-8">
+                    <label for="column-8">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Datum prijema
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" checked id="column-9">
+                    <label for="column-9">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Datum dokumenta
+                </p>
+            </div>
+            <div class="column-wrapper">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="column-10">
+                    <label for="column-10">
+                        <i class="fa fa-check"></i>
+                        <i class="fa fa-times"></i>
+                    </label>
+                </div>
+                <p class="column-name">
+                    Datum poslednje izmene
+                </p>
+            </div>
+        </div>
+
+        <button id="export-columns" class="btn btn-success">Izvezi</button>
+    </div>
+</div>

@@ -1,0 +1,144 @@
+﻿@model NTEDoc.Models.ViewModels.RegisterViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Register</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Font Awesome -->
+    <link href="~/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    <link href="~/dist/css/adminlte.min.css" rel="stylesheet" />
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/images/icons/folder.png">
+</head>
+<body class="hold-transition register-page">
+    <div class="register-box">
+        <div class="register-logo">
+            <a asp-controller="Home" asp-action="Index"><b>NTE</b>dOC</a>
+        </div>
+        <div class="card">
+            <div class="card-body register-card-body">
+                <p class="login-box-msg">Registruj novog korisnika</p>
+                <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row">
+                        <label asp-for="FirstName"></label>
+                        <div class="form-group col-lg-12">
+                            <input asp-for="FirstName" type="text" class="form-control" placeholder="Ime" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label asp-for="LastName"></label>
+                        <div class="form-group col-lg-12">
+                            <input asp-for="LastName" type="text" class="form-control" placeholder="Prezime" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label asp-for="Username"></label>
+                        <div class="input-group mb-3">
+                            <input asp-for="Username" type="text" class="form-control" placeholder="Username">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label asp-for="Password"></label>
+                        <div class="input-group mb-3">
+                            <input asp-for="Password" type="text" class="form-control" placeholder="Password">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label asp-for="ConfirmPassword"></label>
+                        <div class="input-group mb-3">
+                            <input asp-for="ConfirmPassword" type="text" class="form-control" placeholder="Confirm Password">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-check"></span>
+                                </div>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label asp-for="RoleId"></label>
+                        <div class="input-group col-lg-12">
+
+                            <select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId" id="roleSelect" onchange="roleInputHandler()">
+                                <option selected="selected" value="">--SELECT--</option>
+                            </select>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user-tag"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
+
+
+                    </div>
+                    <div class="row" style="display:none" id="sectorSelect">
+                        <label asp-for="SektorId"></label>
+                        <div class="input-group col-lg-12">
+
+                            <select asp-for="SektorId" class="form-control" asp-items="ViewBag.SektorId" id="sectorInput">
+                                <option selected="selected" value="">--SELECT--</option>
+                            </select>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user-cog"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <span asp-validation-for="SektorId" class="text-danger"></span>
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <button type="submit" style="background-color: #339966; color:white;" class="btn  btn-block btn-flat">Register</button>
+                        </div>
+                    </div>
+                </form>
+
+                <a asp-action="Login" asp-controller="Account" class="text-center" style="color:#339966;">Već imam nalog</a>
+            </div>
+        </div>
+            <!-- /.form-box -->
+    </div>
+
+
+    <script src="~/js/site.js"></script>
+
+</body>
+</html>

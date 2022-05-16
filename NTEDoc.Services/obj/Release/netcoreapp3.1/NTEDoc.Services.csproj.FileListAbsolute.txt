@@ -1,0 +1,18 @@
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\bin\Release\netcoreapp3.1\NTEDoc.Services.deps.json
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\bin\Release\netcoreapp3.1\NTEDoc.Services.dll
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\bin\Release\netcoreapp3.1\NTEDoc.Services.pdb
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.csprojAssemblyReference.cache
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.csproj.CoreCompileInputs.cache
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.AssemblyInfoInputs.cache
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.AssemblyInfo.cs
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.dll
+C:\Users\Nikola\source\WorkspacesNTETFS\NTEDocV2\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.pdb
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\bin\Release\netcoreapp3.1\NTEDoc.Services.deps.json
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\bin\Release\netcoreapp3.1\NTEDoc.Services.dll
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\bin\Release\netcoreapp3.1\NTEDoc.Services.pdb
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.csprojAssemblyReference.cache
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.AssemblyInfoInputs.cache
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.AssemblyInfo.cs
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.csproj.CoreCompileInputs.cache
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.dll
+C:\Work\NTEDoc project\First\app\NTEDoc\NTEDoc\NTEDoc.Services\obj\Release\netcoreapp3.1\NTEDoc.Services.pdb

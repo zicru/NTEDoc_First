@@ -1,0 +1,76 @@
+﻿@model NTEDoc.Models.ViewModels.LoginViewModel
+.
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NTEDoc  | Log in</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Font Awesome -->
+    <link href="~/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    <link href="~/dist/css/adminlte.min.css" rel="stylesheet" />
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/images/icons/folder.png">
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <a asp-controller="Home" asp-action="Index"><b>NTE</b>dOC</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body login-card-body">
+
+                <p class="login-box-msg">Sign in</p>
+                <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                    <div class="form-group has-feedback">
+                        <input asp-for="UserName" class="form-control" placeholder="Username">
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input asp-for="Password" class="form-control" placeholder="Password">
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            @*<div class="checkbox">
+                            <label asp-for="RememberMe">
+                                <input asp-for="RememberMe" />
+                                @Html.DisplayNameFor(m => m.RememberMe)
+                            </label>
+                        </div>*@
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4">
+                            <button style="background-color: #339966; color:white;" type="submit" class="btn  btn-block btn-flat">Sign In</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+                <!-- /.social-auth-links -->
+                @*<a href="#">I forgot my password</a><br>*@
+                @*<a style="color: #339966;" asp-action="Register" asp-controller="Account">Registrujte se</a>*@
+            </div>
+            <!-- /.login-box-body -->
+           </div>
+        </div>
+</body>
+</html>
