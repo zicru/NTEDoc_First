@@ -46,6 +46,11 @@
     background-color: lightgoldenrodyellow !important;
 }
 
+.document-table-row.has-comment.prev-selected,
+.document-table-row.prev-selected {
+    background: #bfe6ef !important;
+}
+
 .export-buttons {
     position: absolute;
     right: 2.1em;

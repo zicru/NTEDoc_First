@@ -352,6 +352,8 @@ namespace NTEDocSystemV2.Controllers
             Document document = new Document();
             document = _unitOfWork.DocumentRepository.GetById(id, new[] { "Sector", "Partner", "DocumentType", "Status", "Likvidator", "CreatedBy", "CompanyContract", "DocumentFiles", "DeliveryType" }).FirstOrDefault();
 
+            document.ControllerName = _entityContext.Users.Where(x => x.RoleId == UserRoles.JNController.ToString()).Where(x => x.UserId == document.ControllerId).FirstOrDefault().FullName;
+
             var contracts = _entityContext.Contracts.Where(c => c.CompanyId == document.Partner.IDFirme).Select(c => new
             {
                 Value = c.CompanyContractId.ToString(),
@@ -830,7 +832,10 @@ namespace NTEDocSystemV2.Controllers
 
             customerData = sektor != null ? customerData.Where(s => s.SectorId == sektor.Id) : customerData;
 
-            //var howbre = customerData.ToList();
+            if (user.RoleId == UserRoles.JNController.ToString())
+            {
+                customerData = customerData.Where(x => x.ControllerId == user.UserId);
+            }
 
             if (!string.IsNullOrEmpty(year))
             {
@@ -1017,6 +1022,7 @@ namespace NTEDocSystemV2.Controllers
             {
                 customerData = customerData.Where(d => d.DeliveryTypeId == deliveryType);
             }
+
 
             //total number of rows count 
             recordsTotal = customerData.Count();

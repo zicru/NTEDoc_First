@@ -89,6 +89,9 @@ namespace NTEDoc.DataRepository
 
         public int? ControllerId { get; set; }
 
+        [NotMapped]
+        public string ControllerName { get; set; }
+
         [ForeignKey("StatusId")]
         [Display(Name = "Status")]
         public Status Status { get; set; }

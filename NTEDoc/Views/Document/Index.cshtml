@@ -343,7 +343,6 @@
             let oldAdvancedFilters = window.localStorage.getItem("advancedFilters");
             let exportIndexes = [13, 2, 3, 4, 5, 6, 7, 9];
 
-
             if (!oldAdvancedFilters) {
                 advancedFilters = {
                     recorders: [],
@@ -598,7 +597,7 @@
                         }
                     },
                     {
-                        "render": function (data, type, full, meta) { return '<a class="btn btn-info" id="ml-2" href="#"><i class="fas fa-search"></i></a>'; }
+                        "render": function (data, type, full, meta) { return `<a class="btn btn-info row-id-${meta.row}" id="ml-2" href="#"><i class="fas fa-search"></i></a>`; }
                     },
                     {
                         "render": function(data, type, full, meta) {
@@ -609,9 +608,8 @@
                     }
                 ],
                 rowCallback: function (row, data) {
-                    row.classList.add('document-table-row');
-
-                    console.log(data.Comment);
+                    row.classList.add(`document-table-row`);
+                    
                     if (data.Comment) {
                         row.classList.add('has-comment');
                     }
@@ -644,9 +642,21 @@
                             'color': '#C81F00',
                         });
                     }
+
                 }
             });
 
+            table.on('draw', function () {
+                let scrollPosition = localStorage.getItem('scrollTop');
+                let prevSelected = parseInt(localStorage.getItem('prevSelected'));
+                $(`a.row-id-${prevSelected}`).parents('tr').addClass('prev-selected');
+
+                if (scrollPosition) {
+                    setTimeout(function () {
+                        $('main').scrollTop(parseInt(scrollPosition));
+                    }, 1);
+                }
+            });
 
             $('#export-modal input[type="checkbox"]').on('change', function(){
                 exportIndexes.splice(exportIndexes.indexOf(13), 1);
@@ -801,6 +811,10 @@
             });
 
             $('#example tbody').on('click', '#ml-2', function () {
+                console.log(this.className.split('-')[3]);
+                localStorage.setItem('prevSelected', parseInt(this.className.split('-')[3]));
+                localStorage.setItem('scrollTop', parseInt($('main').scrollTop()));
+
                 var data = table.row($(this).parents('tr')).data();
                 var url = '@Url.Action("Details", "Document")?Id=' + data.Id; //"/Document/Details/" + data.Id;
                 window.location.href = url;
@@ -1065,6 +1079,7 @@
 
                 $('.custom-select-wrapper .options.active').removeClass('active');
             });
+
         });
 
 

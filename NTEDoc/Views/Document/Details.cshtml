@@ -196,6 +196,10 @@
             <p class="detail-value">@Html.DisplayFor(model => model.Likvidator.FullName)</p>
         </div>
         <div class="document-detail">
+            <h6 class="detail-name">JN Kontrolor</h6>
+            <p class="detail-value">@Html.DisplayFor(model => model.ControllerName)</p>
+        </div>
+        <div class="document-detail">
             <h6 class="detail-name">@Html.DisplayNameFor(model => model.Sector)</h6>
             <p class="detail-value">@Html.DisplayFor(model => model.Sector.Naziv)</p>
         </div>
@@ -217,9 +221,9 @@
             <div class="document-actions">
 
                 @if (
-       DocumentStatus.RecorderStatuses.Any(s => s == ViewBag.Status) &&
-       ViewBag.UserRole == UserRoles.Recorder &&
-       ViewBag.MadeByRecorder)
+     DocumentStatus.RecorderStatuses.Any(s => s == ViewBag.Status) &&
+     ViewBag.UserRole == UserRoles.Recorder &&
+     ViewBag.MadeByRecorder)
                 {
 
                     <div class="actions-group">
@@ -379,8 +383,6 @@
 
     <div class="document-files">
         <h4 class="document-files-title">Fajlovi</h4>
-
-
 
         @if (Model.DocumentFiles.Count >= 1)
         {
