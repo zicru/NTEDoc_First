@@ -131,10 +131,6 @@
     </div>
 }
 
-
-
-
-
 <h2 class="main-page-heading">Detalji</h2>
 
 <div class="document-details">
@@ -220,47 +216,13 @@
         {
             <div class="document-actions">
 
-                @if (
-     DocumentStatus.RecorderStatuses.Any(s => s == ViewBag.Status) &&
-     ViewBag.UserRole == UserRoles.Recorder &&
-     ViewBag.MadeByRecorder)
+                @if (DocumentStatus.JNControllerStatuses.Any(s => s == ViewBag.Status) && ViewBag.UserRole == UserRoles.JNController && ViewBag.BelongsToController)
                 {
-
                     <div class="actions-group">
 
-                        @if (ViewBag.CanSendToController)
+                        @if (ViewBag.CanSendToSectorInCharge)
                         {
-                            <button class="bttn bttn-circle bttn-circle-success" id="sendToController"><i class="fas fa-step-forward"></i></button>
-                        }
-
-                    </div>
-
-                    <div class="actions-group">
-
-                        @if (ViewBag.CanAddOrUpdateDocuments)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-warning" id="btn-edit"><i class="far fa-edit"></i></button>
-                        }
-
-                        @if (ViewBag.CanReturnToSupplier)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
-                        }
-
-                    </div>
-
-                }
-                else if (
-                 DocumentStatus.JNControllerStatuses.Any(s => s == ViewBag.Status) &&
-                 ViewBag.UserRole == UserRoles.JNController &&
-                 ViewBag.BelongsToController)
-                {
-
-                    <div class="actions-group">
-
-                        @if (ViewBag.CanSendToExecutor)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-success" id="sendToExecutor"><i class="fas fa-step-forward"></i></button>
+                            <button class="bttn bttn-circle bttn-circle-success" id="forwardToSector"><i class="fas fa-step-forward"></i></button>
                         }
 
                         @if (ViewBag.CanEditDocuments)
@@ -273,11 +235,6 @@
 
                     <div class="actions-group">
 
-                        @if (ViewBag.CanReturnToRecorder)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-warning" id="returnToRecorder"><i class="fas fa-undo"></i></button>
-                        }
-
                         @if (ViewBag.CanReturnToSupplier)
                         {
                             <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
@@ -286,59 +243,28 @@
                     </div>
 
                 }
-                else if (
-                    DocumentStatus.ExecutorStatuses.Any(s => s == ViewBag.Status) &&
-                    ViewBag.UserRole == UserRoles.Executor &&
-                    ViewBag.AssignedToExecutor)
+                else if (DocumentStatus.ExecutorStatuses.Any(s => s == ViewBag.Status) && ViewBag.UserRole == UserRoles.Executor && ViewBag.AssignedToExecutor)
                 {
 
                     <div class="actions-group">
-                        @if (ViewBag.Status == DocumentStatus.JNControllerSentToExecutor)
-                        {
-                            if (ViewBag.CanConfirmReceiving)
-                            {
-                                <button class="bttn bttn-circle bttn-circle-success" id="confirm-received"><i class="fas fa-check"></i></button>
-                            }
-                        }
-                        else if (ViewBag.Status == DocumentStatus.ExecutorReceivedFromJNController)
-                        {
-                            if (ViewBag.CanSendToSectorInCharge)
-                            {
-                                <button class="bttn bttn-circle bttn-circle-success" id="forward-to-sector"><i class="fas fa-check"></i></button>
-                            }
 
-                            if (ViewBag.CanReturnToRecorder)
-                            {
-                                <button class="bttn bttn-circle bttn-circle-warning long-return-btn" id="returnToRecorder"><i class="fas fa-undo"></i> Vrati evidentičaru</button>
-                            }
-
-                            if (ViewBag.CanReturnToController && (Model.ControllerId != null && Model.ControllerId != 0))
-                            {
-                                <button class="bttn bttn-circle bttn-circle-warning long-return-btn" id="returnToControllor"><i class="fas fa-undo"></i> Vrati kontroloru</button>
-                            }
-
-                        }
-                        else if (ViewBag.Status == DocumentStatus.SectorSignedAndApproved)
+                        @if (ViewBag.CanApproveDocuments)
                         {
-                            if (ViewBag.CanApproveDocuments)
-                            {
-                                <button class="bttn bttn-circle bttn-circle-success" id="approveDocument"><i class="fas fa-check"></i></button>
-                            }
+                            <button class="bttn bttn-circle bttn-circle-success" id="approveDocument"><i class="fas fa-check"></i></button>
                         }
+
                     </div>
 
 
                     <div class="actions-group">
-                        @if (ViewBag.CanReturnToSupplier && ViewBag.Status != DocumentStatus.JNControllerSentToExecutor)
+                        @if (ViewBag.CanReturnToSupplier)
                         {
                             <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
                         }
                     </div>
 
                 }
-                else if (
-                 DocumentStatus.SectorStatuses.Any(s => s == ViewBag.Status) &&
-                 ViewBag.UserRole == UserRoles.SectorRecorder)
+                else if (DocumentStatus.SectorStatuses.Any(s => s == ViewBag.Status) && ViewBag.UserRole == UserRoles.SectorRecorder)
                 {
 
                     <div class="actions-group">
@@ -361,20 +287,6 @@
 
                 }
 
-                @if (ViewBag.UserRole == UserRoles.HigherExecutor && ViewBag.Status == DocumentStatus.JNControllerSentToExecutor)
-                {
-                    @if (ViewBag.CanEditDocuments)
-                    {
-                        <button class="bttn bttn-circle bttn-circle-warning" id="controllerEdit"><i class="fas fa-edit"></i></button>
-                    }
-                }
-                else if (ViewBag.UserRole == UserRoles.HigherJNController && ViewBag.Status == DocumentStatus.RecorderSentToJNController)
-                {
-                    @if (ViewBag.CanEditDocuments)
-                    {
-                        <button class="bttn bttn-circle bttn-circle-warning" id="controllerEdit"><i class="fas fa-edit"></i></button>
-                    }
-                }
             </div>
         }
 
@@ -432,9 +344,12 @@
             </p>
         }
 
-        <div class="all-files-actions">
-            <button class="bttn bttn-circle" id="add-new-file"><i class="fas fa-plus"></i></button>
-        </div>
+        @if (ViewBag.CanAddFilesToDocuments)
+        {
+            <div class="all-files-actions">
+                <button class="bttn bttn-circle" id="add-new-file"><i class="fas fa-plus"></i></button>
+            </div>
+        }
 
     </div>
 </div>

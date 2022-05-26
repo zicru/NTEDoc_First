@@ -60,6 +60,10 @@ namespace NTEDocSystemV2.Controllers
 
         public IActionResult Index()
         {
+            if (!UserHasPermission(UserPermissions.CanViewDocuments))
+            {
+                return View();
+            }
 
             List<Partner> dropListPartner = new List<Partner>();
             dropListPartner = _unitOfWork.PartnerRepository.GetAll().ToList();
@@ -67,12 +71,10 @@ namespace NTEDocSystemV2.Controllers
             ViewBag.Partners = dropListPartner;
             ViewBag.PartnerList = new SelectList(dropListPartner, "Id", "naziv");
 
-            ViewBag.Recorders = _entityContext.Users.Where(u => u.RoleId == UserRoles.Recorder.ToString());
-
             //List<PartneriUgovori> dropList = new List<PartneriUgovori>();
             //var firmaIdList = _uzzpContext.V_firme_ugovori.Select(s => s.IDFirme).ToList();
 
-            ViewBag.CanCreateDocuments = UserHasPermission(UserPermissions.CanAddOrUpdateDocuments);
+            ViewBag.CanCreateDocuments = UserHasPermission(UserPermissions.CanAddDocuments);
 
             List<Sector> dropListSector = new List<Sector>();
             dropListSector = _unitOfWork.SectorRepository.GetAll().ToList();
@@ -223,14 +225,14 @@ namespace NTEDocSystemV2.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Document model, IFormFile documentFile)
         {
-            if (ModelState.IsValid && UserHasPermission(UserPermissions.CanAddOrUpdateDocuments))
+            if (ModelState.IsValid && UserHasPermission(UserPermissions.CanAddDocuments))
             {
                 var user = GetUserFromToken();
 
                 model.CreatedByUserId = user.UserId;
                 model.CreatedDate = DateTime.Now.Date;
                 model.LastStatusChangeDate = DateTime.Now.Date;
-                model.StatusId = 0;
+                model.StatusId = 1;
 
                 _unitOfWork.DocumentRepository.Insert(model);
                 _unitOfWork.Save();
@@ -258,7 +260,7 @@ namespace NTEDocSystemV2.Controllers
         [HttpPost]
         public async Task<IActionResult> AddFilesToDocument(Document model, IFormFile newDocumentFile, string fileTitle, int isPrimary)
         {
-            if (newDocumentFile != null && UserHasPermission(UserPermissions.CanAddOrUpdateDocuments))
+            if (newDocumentFile != null && UserHasPermission(UserPermissions.CanAddFilesToDocuments))
             {
                 _entityContext.DocumentFiles.Add(new DocumentFile
                 {
@@ -329,6 +331,11 @@ namespace NTEDocSystemV2.Controllers
         [HttpGet]
         public IActionResult Details(int id)
         {
+            if (!UserHasPermission(UserPermissions.CanViewDocuments))
+            {
+                return RedirectToAction("Index");
+            }
+
             List<Sector> dropListSector = new List<Sector>();
             dropListSector = _unitOfWork.SectorRepository.GetAll().ToList();
 
@@ -379,20 +386,20 @@ namespace NTEDocSystemV2.Controllers
             ViewBag.UserRole = Int16.Parse(user.RoleId);
 
             // Setting permissions
-            ViewBag.CanAddOrUpdateDocuments = UserHasPermission(UserPermissions.CanAddOrUpdateDocuments);
-            ViewBag.CanSendToController = UserHasPermission(UserPermissions.CanSendToController);
-
+            ViewBag.CanAddDocuments = UserHasPermission(UserPermissions.CanAddDocuments);
             ViewBag.CanEditDocuments = UserHasPermission(UserPermissions.CanEditDocuments);
-            ViewBag.CanSendToExecutor = UserHasPermission(UserPermissions.CanSendToExecutor);
+            ViewBag.CanAddFilesToDocuments = UserHasPermission(UserPermissions.CanAddFilesToDocuments);
 
-            ViewBag.CanConfirmReceiving = UserHasPermission(UserPermissions.CanConfirmReceiving);
             ViewBag.CanSendToSectorInCharge = UserHasPermission(UserPermissions.CanSendToSectorInCharge);
-            ViewBag.CanReturnToRecorder = UserHasPermission(UserPermissions.CanReturnToRecorder);
-            ViewBag.CanReturnToController = UserHasPermission(UserPermissions.CanReturnToController);
-            ViewBag.CanReturnToSupplier = UserHasPermission(UserPermissions.CanReturnToSupplier);
-
             ViewBag.CanSignAndVerifyDocuments = UserHasPermission(UserPermissions.CanSignAndVerifyDocuments);
+            ViewBag.CanReturnToController = UserHasPermission(UserPermissions.CanReturnToController);
+
+            ViewBag.CanReturnToSupplier = UserHasPermission(UserPermissions.CanReturnToSupplier);
             ViewBag.CanApproveDocuments = UserHasPermission(UserPermissions.CanApproveDocuments);
+
+            ViewBag.CanViewDocuments = UserHasPermission(UserPermissions.CanViewDocuments);
+            ViewBag.CanViewUsers = UserHasPermission(UserPermissions.CanViewUsers);
+            ViewBag.CanAddOrUpdateUsers = UserHasPermission(UserPermissions.CanAddOrUpdateUsers);
 
             // Setting the sector
             ViewBag.Sektor = sektor != null ? sektor.Naziv : null;
@@ -484,97 +491,6 @@ namespace NTEDocSystemV2.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult ChangeStatusSentToController(int? id, int? controllerId, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            if (controllerId == null || controllerId == 0)
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerSentToExecutor);
-                return RedirectToAction("Details", new { id = id });
-            }
-
-            if (UserHasPermission(UserPermissions.CanSendToController))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.RecorderSentToJNController);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to forward the documents to the Executors.");
-            }
-
-            return RedirectToAction("Details", new { id = id });
-        }
-
-
-        [HttpPost]
-        public IActionResult ChangeStatusSentToExecutor(int? id, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            if (UserHasPermission(UserPermissions.CanSendToExecutor))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerSentToExecutor);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to forward the documents to the Executors.");
-            }
-
-            return RedirectToAction("Details", new { id = id });
-        }
-
-        [HttpPost]
-        public IActionResult ChangeStatusExecutorReceived(int? id, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            if (UserHasPermission(UserPermissions.CanConfirmReceiving))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.ExecutorReceivedFromJNController);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to confirm that you received the document.");
-            }
-
-            return RedirectToAction("Details", new { id = id });
-        }
-
-        [HttpPost]
-        public IActionResult ChangeStatusReturnedToRecorder(int? id, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var currentUser = HttpContext.User as ClaimsPrincipal;
-            var currentUserRole = currentUser.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value.ToInt();
-
-            if (UserHasPermission(UserPermissions.CanReturnToRecorder))
-            {
-                ChangeDocumentStatus(id, comment, currentUserRole == UserRoles.JNController ? 
-                    DocumentStatus.JNControllerReturnedToRecorder : 
-                    DocumentStatus.ExecutorReturnedToRecorder);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to forward the documents to the Executors.");
-            }
-
-            return RedirectToAction("Details", new { id = id });
-        }
 
         [HttpPost]
         public IActionResult ChangeStatusForwardToSector(int? id, string comment)
@@ -586,7 +502,7 @@ namespace NTEDocSystemV2.Controllers
 
             if (UserHasPermission(UserPermissions.CanSendToSectorInCharge))
             {
-                ChangeDocumentStatus(id, comment, DocumentStatus.ExecutorSentToSector);
+                ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerSentToSector);
             }
             else
             {
@@ -633,7 +549,7 @@ namespace NTEDocSystemV2.Controllers
 
             if (UserHasPermission(UserPermissions.CanReturnToController))
             {
-                ChangeDocumentStatus(id, comment, DocumentStatus.ExecutorReturnedToJNController);
+                ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerReceivedDocument);
             }
             else
             {
@@ -643,31 +559,6 @@ namespace NTEDocSystemV2.Controllers
             return RedirectToAction("Details", new { id = id });
         }
         
-        //[HttpPost]
-        //public IActionResult ChangeStatusReferentProcessed(int? id, string comment, int sectorApproval)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (UserHasPermission(UserPermissions.CanVerifyDocuments))
-        //    {
-        //        ChangeDocumentStatus(id, comment, DocumentStatus.ReferentProcessed);
-
-        //        var document = _unitOfWork.DocumentRepository.GetById(id);
-        //        document.SectorApproved = Convert.ToByte(sectorApproval);
-
-        //        _unitOfWork.DocumentRepository.Update(document);
-        //        _unitOfWork.Save();
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to process documents.");
-        //    }
-
-        //    return RedirectToAction("Details", new { id = id });
-        //}
 
         [HttpPost]
         public IActionResult ChangeStatusApproved(int? id, string comment)
@@ -895,7 +786,7 @@ namespace NTEDocSystemV2.Controllers
             {
                 customerData = customerData.Where(d => d.LikvidatorId == user.UserId);
             }
-            else if (userRoleFilter.ForTypeId == UserRoles.Recorder && !userRoleFilter.IsOn)
+            else if (userRoleFilter.ForTypeId == UserRoles.HelperRecorder && !userRoleFilter.IsOn)
             {
                 customerData = customerData.Where(d => d.CreatedByUserId == user.UserId);
             }
@@ -904,11 +795,7 @@ namespace NTEDocSystemV2.Controllers
 
             var awaitingUserFilter = dataTableParams.AwaitingUser;
 
-            if (awaitingUserFilter.ForTypeId == UserRoles.Recorder && awaitingUserFilter.IsOn)
-            {
-                customerData = customerData.Where(x => DocumentStatus.RecorderStatuses.Any(xx => xx == x.StatusId.Value));
-            } 
-            else if (awaitingUserFilter.ForTypeId == UserRoles.JNController && awaitingUserFilter.IsOn)
+            if (awaitingUserFilter.ForTypeId == UserRoles.JNController && awaitingUserFilter.IsOn)
             {
                 customerData = customerData.Where(x => DocumentStatus.JNControllerStatuses.Any(xx => xx == x.StatusId.Value));
             } 

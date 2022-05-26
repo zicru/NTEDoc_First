@@ -635,7 +635,7 @@
                     let isHigherExecutor = @(ViewBag.UserRole) === @(UserRoles.HigherExecutor);
 
                     let isCorrectRole = isSectorRecorder || isExecutor || isHigherExecutor;
-                    let isCorrectStatus = data.StatusId === @(DocumentStatus.ExecutorSentToSector);
+                    let isCorrectStatus = data.StatusId === @(DocumentStatus.JNControllerSentToSector);
 
                     if (isCorrectRole && daysDifference >= 3 && isCorrectStatus) {
                         $(`td`, row).css({

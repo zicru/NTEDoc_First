@@ -11,8 +11,7 @@ let toggleNav = document.querySelector('#toggle-nav'),
     selectReplacement = document.querySelector(`.select-replacement`),
     selectOptionsReplacement = document.querySelectorAll(`.option-replacement`),
     selectedReplacement = document.querySelector(`.selected-option`),
-    selectOptionsWrapper = document.querySelector('.options'),
-    sendToExecutorModal = $('#send-to-executor-modal'),
+    selectOptionsWrapper = document.querySelector('.options')
     returnToContractorModal = $('#return-to-contractor-modal'),
     editDocumentModal = $('#edit-document-modal'),
     confirmReceivingDocumentModal = $('#executor-received-modal'),
@@ -48,10 +47,6 @@ $('#readComment').on('click', function () {
 
 
 
-$('#sendToController').on('click', function () {
-    sendToControllerModal.addClass('active');
-});
-
 $('#btn-edit').on('click', function () {
     editDocumentModal.addClass('active');
 });
@@ -63,28 +58,17 @@ $('#reject').on('click', function () {
 
 
 
-$('#sendToExecutor').on('click', function () {
-    sendToExecutorModal.addClass('active');
+$('#forwardToSector').on('click', function () {
+    forwardToSectorModal.addClass('active');
 });
+
 
 $('#controllerEdit').on('click', function () {
     editDocumentModal.addClass('active');
 });
 
-$('#returnToRecorder').on('click', function () {
-    backToRecorderModal.addClass('active');
-});
 
 
-
-
-$('#confirm-received').on('click', function () {
-    confirmReceivingDocumentModal.addClass('active');
-});
-
-$('#forward-to-sector').on('click', function () {
-    forwardToSectorModal.addClass('active');
-});
 
 $('#returnToControllor').on('click', function () {
     returnToControllerModal.addClass('active');
