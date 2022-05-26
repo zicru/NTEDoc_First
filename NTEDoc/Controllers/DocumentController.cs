@@ -352,7 +352,11 @@ namespace NTEDocSystemV2.Controllers
             Document document = new Document();
             document = _unitOfWork.DocumentRepository.GetById(id, new[] { "Sector", "Partner", "DocumentType", "Status", "Likvidator", "CreatedBy", "CompanyContract", "DocumentFiles", "DeliveryType" }).FirstOrDefault();
 
-            document.ControllerName = _entityContext.Users.Where(x => x.RoleId == UserRoles.JNController.ToString()).Where(x => x.UserId == document.ControllerId).FirstOrDefault().FullName;
+            var documentController = _entityContext.Users.Where(x => x.RoleId == UserRoles.JNController.ToString()).Where(x => x.UserId == document.ControllerId).FirstOrDefault();
+            if (documentController != null)
+            {
+                document.ControllerName = documentController.FullName;
+            }
 
             var contracts = _entityContext.Contracts.Where(c => c.CompanyId == document.Partner.IDFirme).Select(c => new
             {
