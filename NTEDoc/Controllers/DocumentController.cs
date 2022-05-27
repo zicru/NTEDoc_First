@@ -232,7 +232,14 @@ namespace NTEDocSystemV2.Controllers
                 model.CreatedByUserId = user.UserId;
                 model.CreatedDate = DateTime.Now.Date;
                 model.LastStatusChangeDate = DateTime.Now.Date;
-                model.StatusId = 1;
+
+                if (model.ControllerId != null)
+                {
+                    model.StatusId = DocumentStatus.JNControllerReceivedDocument;
+                } else
+                {
+                    model.StatusId = DocumentStatus.JNControllerSentToSector;
+                }
 
                 _unitOfWork.DocumentRepository.Insert(model);
                 _unitOfWork.Save();
@@ -359,7 +366,11 @@ namespace NTEDocSystemV2.Controllers
             Document document = new Document();
             document = _unitOfWork.DocumentRepository.GetById(id, new[] { "Sector", "Partner", "DocumentType", "Status", "Likvidator", "CreatedBy", "CompanyContract", "DocumentFiles", "DeliveryType" }).FirstOrDefault();
 
-            document.ControllerName = _entityContext.Users.Where(x => x.RoleId == UserRoles.JNController.ToString()).Where(x => x.UserId == document.ControllerId).FirstOrDefault().FullName;
+            var documentController = _entityContext.Users.Where(x => x.RoleId == UserRoles.JNController.ToString()).Where(x => x.UserId == document.ControllerId).FirstOrDefault();
+            if (documentController != null)
+            {
+                document.ControllerName = documentController.FullName;
+            }
 
             var contracts = _entityContext.Contracts.Where(c => c.CompanyId == document.Partner.IDFirme).Select(c => new
             {
