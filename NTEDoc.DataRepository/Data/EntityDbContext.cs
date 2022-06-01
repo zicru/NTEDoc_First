@@ -24,7 +24,8 @@ namespace NTEDoc.DataRepository.Data
         public DbSet<DocumentType> DocumentType { get; set; }
         public DbSet<StatusChange> StatusChanges { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Status> Statusi { get; set; }
+        public DbSet<DocumentStatus> Statuses { get; set; }
+        public DbSet<StatusTransaction> StatusTransactions { get; set; }
         public DbSet<Partner> Partner { get; set; }
         public DbSet<RolePermissions> RolePermissions { get; set; }
         public DbSet<CompanyContract> Contracts { get; set; }
@@ -125,7 +126,7 @@ namespace NTEDoc.DataRepository.Data
                 entity.ToTable("Partner", "data");
             });
 
-            modelBuilder.Entity<Status>(entity =>
+            modelBuilder.Entity<DocumentStatus>(entity =>
             {
                 entity.ToTable("Statusi", "def");
                 entity.Property(e => e.Id).HasColumnName("Id");
@@ -138,8 +139,11 @@ namespace NTEDoc.DataRepository.Data
             modelBuilder.Entity<DocumentType>(entity =>
             {
                 entity.ToTable("DocumentType", "def");
+            });
 
-
+            modelBuilder.Entity<StatusTransaction>(entity =>
+            {
+                entity.HasKey(x => new { x.StatusId, x.NextStatusId });
             });
 
             modelBuilder.Entity<StatusChange>(entity =>

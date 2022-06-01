@@ -17,7 +17,7 @@ namespace NTEDoc.DataRepository.UnitOfWork
         public IGenericRepository<Partner> PartnerRepository { get; }
         public ILogRepository LogRepository { get; }
         public IGenericRepository<Likvidatori> LikvidatorRepository { get; }
-        public IGenericRepository<Status> StatusRepository { get; }
+        public IGenericRepository<DocumentStatus> StatusRepository { get; }
 
         void Dispose();
         void Save();

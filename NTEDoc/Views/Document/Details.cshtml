@@ -216,75 +216,29 @@
         {
             <div class="document-actions">
 
-                @if (DocumentStatus.JNControllerStatuses.Any(s => s == ViewBag.Status) && ViewBag.UserRole == UserRoles.JNController && ViewBag.BelongsToController)
+                @if (ViewBag.UserRole == UserRoles.JNController && ViewBag.BelongsToController && ViewBag.StatusUserId == UserRoles.JNController)
                 {
                     <div class="actions-group">
-
-                        @if (ViewBag.CanSendToSectorInCharge)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-success" id="forwardToSector"><i class="fas fa-step-forward"></i></button>
-                        }
-
-                        @if (ViewBag.CanEditDocuments)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-warning" id="controllerEdit"><i class="fas fa-edit"></i></button>
-                        }
-
+                        <button class="bttn bttn-circle bttn-circle-success status-button" id="status-forward-button" data-next-status="@ViewBag.ApproveStatus"><i class="fas fa-step-forward"></i></button>
                     </div>
-
-
                     <div class="actions-group">
-
-                        @if (ViewBag.CanReturnToSupplier)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
-                        }
-
+                        <button class="bttn bttn-circle bttn-circle-danger status-button" id="status-reject-button" data-next-status="@ViewBag.RejectStatus"><i class="fas fa-times"></i></button>
                     </div>
-
                 }
-                else if (DocumentStatus.ExecutorStatuses.Any(s => s == ViewBag.Status) && ViewBag.UserRole == UserRoles.Executor && ViewBag.AssignedToExecutor)
+                else if (ViewBag.UserRole == UserRoles.Executor && ViewBag.AssignedToExecutor && ViewBag.StatusUserId == UserRoles.Executor)
                 {
-
                     <div class="actions-group">
-
-                        @if (ViewBag.CanApproveDocuments)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-success" id="approveDocument"><i class="fas fa-check"></i></button>
-                        }
-
+                        <button class="bttn bttn-circle bttn-circle-success status-button" id="status-forward-button" data-next-status="@ViewBag.ApproveStatus"><i class="fas fa-step-forward"></i></button>
                     </div>
-
-
                     <div class="actions-group">
-                        @if (ViewBag.CanReturnToSupplier)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
-                        }
+                        <button class="bttn bttn-circle bttn-circle-danger status-button" id="status-reject-button" data-next-status="@ViewBag.RejectStatus"><i class="fas fa-times"></i></button>
                     </div>
-
                 }
-                else if (DocumentStatus.SectorStatuses.Any(s => s == ViewBag.Status) && ViewBag.UserRole == UserRoles.SectorRecorder)
+                else if (ViewBag.UserRole == UserRoles.SectorRecorder && ViewBag.StatusUserId == UserRoles.SectorRecorder)
                 {
-
                     <div class="actions-group">
-
-                        @if (ViewBag.CanSignAndVerifyDocuments)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-success" id="signAndApprove"><i class="fas fa-step-forward"></i></button>
-                        }
-
+                        <button class="bttn bttn-circle bttn-circle-success status-button" id="status-forward-button" data-next-status="@ViewBag.ApproveStatus"><i class="fas fa-step-forward"></i></button>
                     </div>
-
-                    <div class="actions-group">
-
-                        @if (ViewBag.CanReturnToSupplier)
-                        {
-                            <button class="bttn bttn-circle bttn-circle-danger" id="reject"><i class="fas fa-times"></i></button>
-                        }
-
-                    </div>
-
                 }
 
             </div>
@@ -386,15 +340,11 @@
     </div>
 </div>
 
-
-<partial name="PartialViews/_ForwardPartial" model="@Model" />
-<partial name="PartialViews/_ReturnedToContractor" model="@Model" />
 <partial name="PartialViews/_SendToControllerModal" model="@Model" />
-<partial name="PartialViews/_ReturnToControllerModal" model="@Model" />
+<partial name="PartialViews/_RejectPartial" model="@Model" />
 <partial name="PartialViews/_ConfirmPartial" model="@Model" />
 <partial name="PartialViews/_EditPartial" model="@Model" />
 <partial name="PartialViews/_ForwardToSectorPartial" model="@Model" />
-<partial name="PartialViews/_ReturnedPartial" model="@Model" />
 <partial name="PartialViews/_SectorProcessingModal" model="@Model" />
 <partial name="PartialViews/_ReferentProcessingModal" model="@Model" />
 <partial name="PartialViews/_ApprovePartial" model="@Model" />
@@ -410,20 +360,27 @@
     <link href="~/plugins/select2/css/select2.css" rel="stylesheet" />
     <script src="~/plugins/select2/js/select2.full.min.js"></script>
 
-    <script>
-        $(function () {
+    <script>$(function () {
             $('.select2').select2()
-        })
-    </script>
+        })</script>
 
 
-    <script>
-        $(document).ready(function () {
+    <script>$(document).ready(function () {
 
             let sectorApprovalToggle = $(`input[name="document-valid"]`),
                 modalInput = $(`input[name="sectorApproval"]`),
                 fileToggle = $(`.file-toggle`),
-                newFileForm = $(`form#new-file`);
+                newFileForm = $(`form#new-file`),
+                statusButton = $(`.status-button`);
+
+            statusButton.on('click', function () {
+                let $this = $(this);
+
+                $(`.status-modal#${$this.attr('id').split('-')[1]}-modal`).addClass('active');
+                $(`.status-modal#${$this.attr('id').split('-')[1]}-modal`)
+                    .find('input[name="changeTo"]')
+                    .val($this.attr('data-next-status'));
+            });
 
             fileToggle.on('click', function () {
                 console.log(this);
@@ -441,6 +398,5 @@
                 modalInput.val(value);
             });
 
-        });
-    </script>
+        });</script>
 }

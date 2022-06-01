@@ -18,7 +18,7 @@ namespace NTEDoc.DataRepository.UnitOfWork
         private IGenericRepository<Partner> _partnerRepository;
         private ILogRepository _logRepository;
         private IGenericRepository<Likvidatori> _likvidatorRepository;
-        private IGenericRepository<Status> _statusRepository;
+        private IGenericRepository<DocumentStatus> _statusRepository;
 
         public UnitOfWork(EntityDbContext context)
         {
@@ -96,13 +96,13 @@ namespace NTEDoc.DataRepository.UnitOfWork
             }
         }
 
-        public IGenericRepository<Status> StatusRepository
+        public IGenericRepository<DocumentStatus> StatusRepository
         {
             get
             {
                 if (this._statusRepository == null)
                 {
-                    this._statusRepository = new GenericRepository<Status>(_context);
+                    this._statusRepository = new GenericRepository<DocumentStatus>(_context);
                 }
                 return _statusRepository;
             }

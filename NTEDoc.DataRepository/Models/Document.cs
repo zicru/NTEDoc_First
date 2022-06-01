@@ -94,7 +94,7 @@ namespace NTEDoc.DataRepository
 
         [ForeignKey("StatusId")]
         [Display(Name = "Status")]
-        public Status Status { get; set; }
+        public DocumentStatus Status { get; set; }
 
         public int? StatusId { get; set; }
 

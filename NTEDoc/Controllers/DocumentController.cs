@@ -146,7 +146,7 @@ namespace NTEDocSystemV2.Controllers
 
             ViewBag.Controllers = controllersList;
             ViewBag.ControllerList = new SelectList(controllersList, "UserId", "FullName");
-            
+
             var contracts = _entityContext.Contracts.Select(c => new
             {
                 Value = c.CompanyContractId.ToString(),
@@ -164,7 +164,7 @@ namespace NTEDocSystemV2.Controllers
             ViewBag.DeliveryTypes = _entityContext.DeliveryTypes.ToList();
             ViewBag.DeliveryTypeList = new SelectList(deliveryTypes, "Value", "Text");
 
-            List<Status> statusList = new List<Status>();
+            List<DocumentStatus> statusList = new List<DocumentStatus>();
             statusList = _unitOfWork.StatusRepository.GetAll().ToList();
 
             ViewBag.Statuses = _unitOfWork.StatusRepository.GetAll().ToList();
@@ -228,17 +228,20 @@ namespace NTEDocSystemV2.Controllers
             if (ModelState.IsValid && UserHasPermission(UserPermissions.CanAddDocuments))
             {
                 var user = GetUserFromToken();
+                var jnStatus = _entityContext.Statuses.Where(x => x.Name == "JN Kontrolor primio dokument").FirstOrDefault();
+                var sectorStatus = _entityContext.Statuses.Where(x => x.Name == "JN Kontrolor prosledio sektoru").FirstOrDefault();
 
                 model.CreatedByUserId = user.UserId;
                 model.CreatedDate = DateTime.Now.Date;
                 model.LastStatusChangeDate = DateTime.Now.Date;
 
-                if (model.ControllerId != null)
+                if (model.ControllerId != null & jnStatus != null)
                 {
-                    model.StatusId = DocumentStatus.JNControllerReceivedDocument;
-                } else
+                    model.StatusId = jnStatus.Id;
+                }
+                else if (sectorStatus != null)
                 {
-                    model.StatusId = DocumentStatus.JNControllerSentToSector;
+                    model.StatusId = sectorStatus.Id;
                 }
 
                 _unitOfWork.DocumentRepository.Insert(model);
@@ -418,10 +421,46 @@ namespace NTEDocSystemV2.Controllers
             // Setting the status
             ViewBag.Status = document.Status.Id;
 
-            // If the status is processed by sector, set the property if it's valid or not
-            if (document.Status.Id == DocumentStatus.SectorSignedAndApproved)
+            // Setting the status changes
+            var statusTransactions = _entityContext.StatusTransactions.Where(x => x.StatusId == document.Status.Id);
+
+            // Temporary solution - don't hardcode it. Change the Status table to have identifier for which button it belongs to
+            if (statusTransactions.Count() > 1)
             {
-                ViewBag.SectorApproved = document.SectorApproved == 1;
+                var firstStatusTransaction = statusTransactions.FirstOrDefault();
+
+                if (Int32.Parse(user.RoleId) == UserRoles.Executor)
+                {
+                    ViewBag.ApproveStatus = 11;
+                    ViewBag.RejectStatus = 10;
+                }
+                else if (Int32.Parse(user.RoleId) == UserRoles.JNController)
+                {
+                    ViewBag.ApproveStatus = 22;
+                    ViewBag.RejectStatus = 10;
+                }
+                ViewBag.StatusUserId = firstStatusTransaction.BelongsToUserTypeId;
+            }
+            else
+            {
+                var statusTransaction = statusTransactions.FirstOrDefault();
+
+                if (statusTransaction != null)
+                {
+                    ViewBag.ApproveStatus = statusTransaction.NextStatusId;
+                    ViewBag.StatusUserId = statusTransaction.BelongsToUserTypeId;
+                }
+            }
+
+            // If the status is processed by sector, set the property if it's valid or not
+            var sectorStatus = _entityContext.Statuses.Where(x => x.Name == "Sektor potpisao i odobrio").FirstOrDefault();
+
+            if (sectorStatus != null)
+            {
+                if (document.Status.Id == sectorStatus.Id)
+                {
+                    ViewBag.SectorApproved = document.SectorApproved == 1;
+                }
             }
 
             ViewBag.StatusChanges = _entityContext.StatusChanges.Where(l => l.DocumentId == document.Id).Include(e => e.Status).Include(e => e.CreatedBy);
@@ -455,6 +494,9 @@ namespace NTEDocSystemV2.Controllers
             //ViewBag.Log = log;
             //return PartialView("_EditPartial", document);
 
+            var asd = ViewBag.AssignedToExecutor;
+            var asddd = ViewBag.UserRole;
+            var asdddd = ViewBag.StatusUserId;
 
             if (document.CompanyContractId == null)
             {
@@ -501,115 +543,105 @@ namespace NTEDocSystemV2.Controllers
             return RedirectToAction("Details", new { id = id });
         }
 
-
-
         [HttpPost]
-        public IActionResult ChangeStatusForwardToSector(int? id, string comment)
+        public IActionResult ChangeDocumentStatusAction(int? id, string comment, int changeTo)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            if (UserHasPermission(UserPermissions.CanSendToSectorInCharge))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerSentToSector);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to forward the documents to sector.");
-            }
+            ChangeDocumentStatus(id, comment, changeTo);
 
             return RedirectToAction("Details", new { id = id });
         }
 
-        [HttpPost]
-        public IActionResult ChangeStatusSectorProcessed(int? id, string comment, int sectorApproval)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //[HttpPost]
+        //public IActionResult ChangeStatusForwardToSector(int? id, string comment)
+        //{ 
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (UserHasPermission(UserPermissions.CanSignAndVerifyDocuments))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.SectorSignedAndApproved);
+        //    if (UserHasPermission(UserPermissions.CanSendToSectorInCharge))
+        //    {
+        //        ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerSentToSector);
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to forward the documents to sector.");
+        //    }
 
-                var document = _unitOfWork.DocumentRepository.GetById(id);
-                document.SectorApproved = Convert.ToByte(sectorApproval);
+        //    return RedirectToAction("Details", new { id = id });
+        //}
 
-                _unitOfWork.DocumentRepository.Update(document);
-                _unitOfWork.Save();
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to process documents.");
-            }
+        //[HttpPost]
+        //public IActionResult ChangeStatusSectorProcessed(int? id, string comment, int sectorApproval)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return RedirectToAction("Details", new { id = id });
-        }
+        //    if (UserHasPermission(UserPermissions.CanSignAndVerifyDocuments))
+        //    {
+        //        ChangeDocumentStatus(id, comment, DocumentStatus.SectorSignedAndApproved);
+
+        //        var document = _unitOfWork.DocumentRepository.GetById(id);
+        //        document.SectorApproved = Convert.ToByte(sectorApproval);
+
+        //        _unitOfWork.DocumentRepository.Update(document);
+        //        _unitOfWork.Save();
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to process documents.");
+        //    }
+
+        //    return RedirectToAction("Details", new { id = id });
+        //}
 
 
-        [HttpPost]
-        public IActionResult ChangeStatusReturnedToController(int? id, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //[HttpPost]
+        //public IActionResult ChangeStatusApproved(int? id, string comment)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (UserHasPermission(UserPermissions.CanReturnToController))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.JNControllerReceivedDocument);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to forward the documents to sector.");
-            }
+        //    if (UserHasPermission(UserPermissions.CanApproveDocuments))
+        //    {
+        //        ChangeDocumentStatus(id, comment, DocumentStatus.Approved);
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to approve documents.");
+        //    }
 
-            return RedirectToAction("Details", new { id = id });
-        }
-        
+        //    return RedirectToAction("Details", new { id = id });
+        //}
 
-        [HttpPost]
-        public IActionResult ChangeStatusApproved(int? id, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //[HttpPost]
+        //public IActionResult ChangeStatusBackToContractor(int? id, string comment)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (UserHasPermission(UserPermissions.CanApproveDocuments))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.Approved);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to approve documents.");
-            }
+        //    if (UserHasPermission(UserPermissions.CanReturnToSupplier))
+        //    {
+        //        ChangeDocumentStatus(id, comment, DocumentStatus.ReturnedToSupplier);
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to approve documents.");
+        //    }
 
-            return RedirectToAction("Details", new { id = id });
-        }
-
-        [HttpPost]
-        public IActionResult ChangeStatusBackToContractor(int? id, string comment)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            if (UserHasPermission(UserPermissions.CanReturnToSupplier))
-            {
-                ChangeDocumentStatus(id, comment, DocumentStatus.ReturnedToSupplier);
-            }
-            else
-            {
-                ModelState.AddModelError("NTEDoc.DataRepository.Models.Document", "Error! You don't have the permission to approve documents.");
-            }
-
-            return RedirectToAction("Details", new { id = id });
-        }
+        //    return RedirectToAction("Details", new { id = id });
+        //}
 
         public IActionResult LoadData([FromBody] DataTableParams dataTableParams)
         {
@@ -806,17 +838,21 @@ namespace NTEDocSystemV2.Controllers
 
             var awaitingUserFilter = dataTableParams.AwaitingUser;
 
+            var controllerStatuses = _entityContext.StatusTransactions.Where(x => x.BelongsToUserTypeId == UserRoles.JNController);
+            var executorStatuses = _entityContext.StatusTransactions.Where(x => x.BelongsToUserTypeId == UserRoles.Executor);
+            var sectorStatuses = _entityContext.StatusTransactions.Where(x => x.BelongsToUserTypeId == UserRoles.SectorRecorder);
+
             if (awaitingUserFilter.ForTypeId == UserRoles.JNController && awaitingUserFilter.IsOn)
             {
-                customerData = customerData.Where(x => DocumentStatus.JNControllerStatuses.Any(xx => xx == x.StatusId.Value));
-            } 
+                customerData = customerData.Where(x => controllerStatuses.Any(xx => xx.StatusId == x.StatusId.Value));
+            }
             else if (awaitingUserFilter.ForTypeId == UserRoles.Executor && awaitingUserFilter.IsOn)
             {
-                customerData = customerData.Where(x => DocumentStatus.ExecutorStatuses.Any(xx => xx == x.StatusId.Value));
+                customerData = customerData.Where(x => executorStatuses.Any(xx => xx.StatusId == x.StatusId.Value));
             }
             else if (awaitingUserFilter.ForTypeId == UserRoles.SectorRecorder && awaitingUserFilter.IsOn)
             {
-                customerData = customerData.Where(x => DocumentStatus.SectorStatuses.Any(xx => xx == x.StatusId.Value));
+                customerData = customerData.Where(x => sectorStatuses.Any(xx => xx.StatusId == x.StatusId.Value));
             }
 
             // Get only longer than 48 hours on same status

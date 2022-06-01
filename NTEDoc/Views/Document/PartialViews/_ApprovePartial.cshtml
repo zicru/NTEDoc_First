@@ -1,18 +1,18 @@
-﻿
-@model NTEDoc.DataRepository.Document
+﻿@model NTEDoc.DataRepository.Document
 
-<div class="custom-modal" id="approve-document-modal">
+<div class="custom-modal status-modal" id="forward-modal">
     <div class="custom-modal-content">
         <div class="modal-close">&times;</div>
 
         <div class="modal-title">Unesite komentar</div>
 
-        <form enctype="multipart/form-data" method="post" asp-action="ChangeStatusApproved">
+        <form enctype="multipart/form-data" method="post" asp-action="ChangeDocumentStatusAction">
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" name="changeTo" />
 
             <textarea class="form-control" rows="3" name="comment"></textarea>
 
-            <input type="submit" value="Odobri dokument" class="bttn bttn-regular bttn-regular-success">
+            <input type="submit" value="Pošalji" class="bttn bttn-regular bttn-regular-success">
         </form>
     </div>
 </div>

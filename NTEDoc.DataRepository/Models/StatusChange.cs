@@ -11,7 +11,7 @@ namespace NTEDoc.DataRepository.Models
         public int Id { get; set; }
 
         [ForeignKey("StatusId")]
-        public Status Status { get; set; }
+        public DocumentStatus Status { get; set; }
         public int StatusId { get; set; }
 
         [ForeignKey("CreatedByUserId")]

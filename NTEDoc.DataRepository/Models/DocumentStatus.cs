@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace NTEDoc.DataRepository.Models
 {
-    public static class DocumentStatus
+    public class DocumentStatus : IEntity
     {
-        public const int JNControllerReceivedDocument = 1;
-        public const int JNControllerSentToSector = 2;
-        public const int SectorSignedAndApproved = 3;
-        public const int ReturnedToSupplier = 10;
-        public const int Approved = 11; 
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public byte? Active { get; set; }
 
-        public static List<int> JNControllerStatuses = new List<int>{
-            1
-        };
 
-        public static List<int> SectorStatuses = new List<int>{
-            2
-        };
+        public ICollection<Document> Document { get; set; }
 
-        public static List<int> ExecutorStatuses = new List<int>{
-            3
-        };
+        public ICollection<StatusChange> StatusChanges { get; set; }
     }
 }

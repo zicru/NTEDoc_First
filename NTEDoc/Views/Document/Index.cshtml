@@ -614,8 +614,8 @@
                         row.classList.add('has-comment');
                     }
 
-                    // Change colors if the status is rejected or approved
-                    let color = data.StatusId === @DocumentStatus.Approved ? 'green' : data.StatusId === @DocumentStatus.ReturnedToSupplier ? 'red' : 'black';
+                    // Change colors if the status is rejected or approved / HARDCODEE
+                    let color = data.StatusId === 11 ? 'green' : data.StatusId === 10 ? 'red' : 'black';
 
                     $(`td:eq(5)`, row).css({
                         'color': color,
@@ -635,7 +635,8 @@
                     let isHigherExecutor = @(ViewBag.UserRole) === @(UserRoles.HigherExecutor);
 
                     let isCorrectRole = isSectorRecorder || isExecutor || isHigherExecutor;
-                    let isCorrectStatus = data.StatusId === @(DocumentStatus.JNControllerSentToSector);
+                    // HARDCODEDDD
+                    let isCorrectStatus = data.StatusId === 22;
 
                     if (isCorrectRole && daysDifference >= 3 && isCorrectStatus) {
                         $(`td`, row).css({
